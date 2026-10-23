@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "border-hairline": "#e4e4e7",
+          "border-subtle": "#f4f4f5",
+          "surface-canvas": "#ffffff",
+          "surface-panel": "#ffffff",
+          "surface-subtle": "#fafafa",
+          "surface-elevated": "#f4f4f5",
+          "text-primary": "#09090b",
+          "text-secondary": "#52525b",
+          "text-muted": "#71717a",
+          "text-faint": "#a1a1aa",
+          "accent-black": "#09090b",
+          "neutral-pill": "#f4f4f5"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.375rem",
+          "xl": "0.5rem",
+          "full": "0.75rem"
+        },
+        "spacing": {
+          "space-lg": "0.75rem",
+          "space-xl": "1rem",
+          "gutter": "1rem",
+          "space-md": "0.5rem",
+          "margin": "1rem",
+          "space-xs": "0.25rem",
+          "space-sm": "0.375rem"
+        },
+        "fontFamily": {
+          "data-mono-sm": ["JetBrains Mono", "monospace"],
+          "headline-lg": ["Hanken Grotesk", "sans-serif"],
+          "label-caps": ["JetBrains Mono", "monospace"],
+          "body-compact": ["Geist", "sans-serif"],
+          "headline-sm": ["Hanken Grotesk", "sans-serif"],
+          "body-strong": ["Geist", "sans-serif"],
+          "data-mono": ["JetBrains Mono", "monospace"],
+          "kbd-shortcut": ["JetBrains Mono", "monospace"],
+          "headline-md": ["Hanken Grotesk", "sans-serif"],
+          "body-default": ["Geist", "sans-serif"],
+          "data-mono-bold": ["JetBrains Mono", "monospace"]
+        },
+        "fontSize": {
+          "data-mono-sm": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+          "headline-lg": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+          "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.06em", "fontWeight": "600"}],
+          "body-compact": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+          "headline-sm": ["14px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+          "body-strong": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "600"}],
+          "data-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+          "kbd-shortcut": ["10px", {"lineHeight": "12px", "fontWeight": "500"}],
+          "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+          "body-default": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
+          "data-mono-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+        }
+      }
+    }
+  }
+</script></head><body class="bg-[#ffffff] font-body-default text-text-primary antialiased selection:bg-black selection:text-white min-h-screen"><header class="fixed top-0 left-0 right-0 h-11 bg-white border-b border-border-hairline z-50 px-gutter"><div class="h-11 w-full flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-md shrink-0"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-text-primary text-[18px]">terminal</span><span class="font-headline-sm text-headline-sm text-text-primary tracking-tight">Orders Explorer</span></div><span class="inline-flex items-center px-1.5 py-0.5 rounded-DEFAULT bg-[#fafafa] border border-border-hairline font-data-mono-sm text-data-mono-sm text-text-secondary">v2.8.4-prod</span><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-DEFAULT bg-[#fafafa] border border-border-hairline text-text-primary font-label-caps text-label-caps uppercase"><span class="w-1.5 h-1.5 rounded-full bg-text-primary"></span>LIVE</span></div><div class="hidden md:flex items-center gap-space-sm bg-[#fafafa] px-space-md py-space-xs rounded border border-border-hairline text-text-secondary font-data-mono text-data-mono"><span class="material-symbols-outlined text-[15px] text-text-primary">sync_alt</span><span class="text-text-primary font-data-mono-bold text-data-mono-bold">1,284</span><span>of</span><span class="text-text-secondary">50,000 orders</span><span class="text-border-hairline">|</span><span class="font-data-mono-sm text-data-mono-sm text-text-muted">Stream: 42ms</span></div><div class="flex items-center gap-space-md shrink-0"><div class="flex items-center bg-[#fafafa] border border-border-hairline rounded-DEFAULT p-0.5"><button class="p-1 rounded-DEFAULT bg-white text-text-primary border border-border-hairline shadow-xs transition-colors" title="Table View" type="button"><span class="material-symbols-outlined text-[16px]">table_rows</span></button><button class="p-1 rounded-DEFAULT text-text-muted hover:bg-white hover:text-text-primary transition-colors" title="Split Inspector" type="button"><span class="material-symbols-outlined text-[16px]">vertical_split</span></button><button class="p-1 rounded-DEFAULT text-text-muted hover:bg-white hover:text-text-primary transition-colors" title="Raw Telemetry Log" type="button"><span class="material-symbols-outlined text-[16px]">data_array</span></button></div><button class="inline-flex items-center gap-space-xs px-space-md py-space-xs h-7 rounded-DEFAULT bg-white border border-border-hairline hover:bg-[#fafafa] text-text-primary font-body-compact text-body-compact transition-colors shadow-xs" type="button"><span class="material-symbols-outlined text-[15px] text-text-secondary">download</span><span>Export CSV</span><kbd class="hidden sm:inline-block font-kbd-shortcut text-kbd-shortcut bg-[#fafafa] border border-border-hairline px-1 rounded-DEFAULT text-text-muted">⌥E</kbd></button><div class="h-4 w-px bg-border-hairline"></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-text-secondary text-[18px] cursor-pointer hover:text-text-primary transition-colors" title="Incidents">notifications</span><div class="flex items-center gap-space-xs pl-space-xs"><div class="w-7 h-7 rounded-full bg-[#f4f4f5] border border-border-hairline flex items-center justify-center"><span class="material-symbols-outlined text-text-primary text-[16px]">person</span></div><div class="hidden lg:flex flex-col text-left"><span class="font-body-compact text-body-compact text-text-primary leading-tight font-semibold">ops.primary</span><span class="font-label-caps text-label-caps text-text-muted uppercase tracking-wider">L3 Responder</span></div></div></div></div></div></header><aside class="fixed left-0 top-11 bottom-0 w-60 bg-white border-r border-border-hairline z-40 flex flex-col justify-between py-space-sm"><div class="flex flex-col gap-space-md"><div class="px-space-md py-space-xs"><span class="font-label-caps text-label-caps text-text-muted uppercase tracking-wider">Queues &amp; Telemetry</span></div><nav class="flex flex-col space-y-0.5 px-space-xs"><a aria-current="page" class="flex items-center justify-between px-space-sm py-1.5 rounded-DEFAULT transition-colors bg-[#fafafa] text-text-primary border border-border-hairline font-body-strong" data-path="live-orders" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-text-primary">orders</span><span>Live Orders</span></span><span class="font-data-mono-sm text-data-mono-sm px-1.5 py-0.2 bg-white border border-border-hairline rounded text-text-secondary">1.2k</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded-DEFAULT text-text-secondary hover:bg-[#fafafa] hover:text-text-primary font-body-compact text-body-compact transition-colors" data-path="critical-failures" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-text-secondary">error</span><span>Critical Failures</span></span><span class="font-data-mono-sm text-data-mono-sm px-1.5 py-0.2 rounded bg-[#f4f4f5] border border-border-hairline text-text-secondary font-medium">14</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded-DEFAULT text-text-secondary hover:bg-[#fafafa] hover:text-text-primary font-body-compact text-body-compact transition-colors" data-path="settlement-exceptions" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-text-secondary">warning</span><span>Settlement Hold</span></span><span class="font-data-mono-sm text-data-mono-sm px-1.5 py-0.2 rounded bg-white border border-border-hairline text-text-secondary">89</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded-DEFAULT text-text-secondary hover:bg-[#fafafa] hover:text-text-primary font-body-compact text-body-compact transition-colors" data-path="routing-logs" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-text-secondary">schema</span><span>Pipeline Routing</span></span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded-DEFAULT text-text-secondary hover:bg-[#fafafa] hover:text-text-primary font-body-compact text-body-compact transition-colors" data-path="telemetry-audit" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-text-secondary">receipt_long</span><span>Audit Ledger</span></span></a></nav></div><div class="px-space-md py-space-xs border-t border-border-hairline flex items-center justify-between font-data-mono-sm text-data-mono-sm text-text-muted"><span>CLUSTER: us-east-01</span><span class="text-text-primary flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-text-primary"></span>SYNC OK</span></div></aside><div class="pl-60"><main class="relative pt-11 min-h-screen w-full bg-[#ffffff] px-gutter"><div class="flex flex-col w-full pb-8">
+<!-- Sub-Header Status & Operations Breadcrumb -->
+<div class="flex items-center justify-between py-space-sm mb-space-xs text-text-secondary">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="font-label-caps text-label-caps text-text-muted uppercase tracking-wider">Telemetry Query</span>
+<span class="text-text-faint">/</span>
+<span class="font-headline-sm text-headline-sm text-text-primary truncate">Transactions Live Pipeline</span>
+<span class="px-2 py-0.5 rounded-DEFAULT bg-[#f4f4f5] border border-border-hairline text-text-primary font-data-mono-sm text-data-mono-sm font-semibold tracking-wide">0 MATCHES</span>
+</div>
+<div class="flex items-center gap-space-md shrink-0">
+<span class="font-data-mono-sm text-data-mono-sm text-text-secondary flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-text-primary"></span>
+        Ingest buffer: <span class="text-text-primary font-medium">14.2 MB/s</span>
+</span>
+<div class="h-3 w-px bg-border-hairline"></div>
+<span class="font-data-mono-sm text-data-mono-sm text-text-secondary">Query Latency: <span class="text-text-primary font-medium">1.8ms</span></span>
+</div>
+</div>
+<!-- SECTION 1: Collapsible Filter Builder Panel (Crisp Clean White Surface) -->
+<div class="flex flex-col rounded-DEFAULT bg-white mb-space-sm overflow-hidden border border-border-hairline shadow-sm">
+<!-- Filter Bar Header -->
+<div class="flex items-center justify-between px-space-md py-2 bg-[#fafafa] border-b border-border-hairline cursor-pointer select-none">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[15px] text-text-secondary transition-transform duration-150 rotate-90">arrow_right</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[15px] text-text-primary">filter_alt</span>
+<span class="font-body-strong text-body-strong text-text-primary">Filter Builder</span>
+</div>
+<kbd class="font-kbd-shortcut text-kbd-shortcut bg-white border border-border-hairline px-1.5 py-0.5 rounded-DEFAULT text-text-secondary shadow-xs">⌘F</kbd>
+<span class="text-border-hairline">•</span>
+<span class="font-data-mono-sm text-data-mono-sm text-text-secondary">Over-constrained criteria active</span>
+</div>
+<div class="flex items-center gap-space-md">
+<!-- Active Filter Quick Chips -->
+<div class="hidden xl:flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps text-text-muted uppercase tracking-wider mr-1">Active:</span>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-DEFAULT bg-white border border-border-hairline text-text-primary text-data-mono-sm font-data-mono-sm">
+<span class="text-text-muted">Amount:</span>
+<span>&gt; ₹950,000</span>
+<span class="material-symbols-outlined text-[13px] text-text-muted hover:text-text-primary cursor-pointer ml-0.5 transition-colors">close</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-DEFAULT bg-white border border-border-hairline text-text-primary text-data-mono-sm font-data-mono-sm">
+<span class="text-text-muted">Created:</span>
+<span>≤ 15m</span>
+<span class="material-symbols-outlined text-[13px] text-text-muted hover:text-text-primary cursor-pointer ml-0.5 transition-colors">close</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-DEFAULT bg-[#f4f4f5] border border-border-hairline text-text-primary text-data-mono-sm font-data-mono-sm">
+<span class="text-text-muted">Priority:</span>
+<span class="text-text-primary font-semibold">P0 - Emerg</span>
+<span class="material-symbols-outlined text-[13px] text-text-muted hover:text-text-primary cursor-pointer ml-0.5 transition-colors">close</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-DEFAULT bg-white border border-border-hairline text-text-primary text-data-mono-sm font-data-mono-sm">
+<span class="text-text-muted">Region:</span>
+<span>NE-Hub</span>
+<span class="material-symbols-outlined text-[13px] text-text-muted hover:text-text-primary cursor-pointer ml-0.5 transition-colors">close</span>
+</div>
+</div>
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded-DEFAULT bg-white hover:bg-[#f4f4f5] hover:text-text-primary text-text-secondary text-data-mono-sm font-data-mono-sm transition-colors border border-border-hairline" onclick="resetTelemetryFilters()" type="button">
+<span class="material-symbols-outlined text-[13px]">clear_all</span>
+<span>Clear all</span>
+</button>
+</div>
+</div>
+<!-- Active Filter Condition Rows -->
+<div class="p-space-md flex flex-col gap-space-xs bg-white">
+<!-- Condition Row 1 -->
+<div class="flex flex-wrap items-center gap-space-xs font-data-mono-sm text-data-mono-sm">
+<span class="w-12 text-center uppercase tracking-wider font-label-caps text-label-caps text-text-muted bg-[#fafafa] border border-border-hairline px-1 py-1 rounded-DEFAULT">WHERE</span>
+<!-- Field Select -->
+<div class="flex items-center justify-between h-7 min-w-[150px] bg-white border border-border-hairline px-2 rounded-DEFAULT text-text-primary cursor-pointer hover:bg-[#fafafa] transition-colors">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-text-secondary text-[14px]">payments</span>
+<span>Amount (₹)</span>
+</span>
+<span class="material-symbols-outlined text-text-muted text-[14px]">expand_more</span>
+</div>
+<!-- Operator Select -->
+<div class="flex items-center justify-between h-7 min-w-[130px] bg-white border border-border-hairline px-2 rounded-DEFAULT text-text-primary cursor-pointer hover:bg-[#fafafa] transition-colors">
+<span class="text-text-primary font-medium">greater than</span>
+<span class="material-symbols-outlined text-text-muted text-[14px]">expand_more</span>
+</div>
+<!-- Value Input -->
+<div class="flex items-center h-7 px-2 bg-white border border-border-hairline rounded-DEFAULT focus-within:border-black focus-within:ring-1 focus-within:ring-black w-40 transition-colors">
+<span class="text-text-muted mr-1 text-[11px]">₹</span>
+<input class="bg-transparent text-text-primary font-data-mono text-data-mono focus:outline-none w-full" type="text" value="950,000"/>
+</div>
+<button class="h-7 w-7 flex items-center justify-center rounded-DEFAULT text-text-muted hover:text-text-primary hover:bg-[#fafafa] transition-colors" title="Remove condition" type="button">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</button>
+</div>
+<!-- Condition Row 2 -->
+<div class="flex flex-wrap items-center gap-space-xs font-data-mono-sm text-data-mono-sm">
+<span class="w-12 text-center uppercase tracking-wider font-label-caps text-label-caps text-text-primary bg-[#f4f4f5] border border-border-hairline px-1 py-1 rounded-DEFAULT font-bold">AND</span>
+<!-- Field Select -->
+<div class="flex items-center justify-between h-7 min-w-[150px] bg-white border border-border-hairline px-2 rounded-DEFAULT text-text-primary cursor-pointer hover:bg-[#fafafa] transition-colors">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-text-secondary text-[14px]">schedule</span>
+<span>Created At</span>
+</span>
+<span class="material-symbols-outlined text-text-muted text-[14px]">expand_more</span>
+</div>
+<!-- Operator Select -->
+<div class="flex items-center justify-between h-7 min-w-[130px] bg-white border border-border-hairline px-2 rounded-DEFAULT text-text-primary cursor-pointer hover:bg-[#fafafa] transition-colors">
+<span class="text-text-primary font-medium">within last</span>
+<span class="material-symbols-outlined text-text-muted text-[14px]">expand_more</span>
+</div>
+<!-- Value Input -->
+<div class="flex items-center h-7 px-2 bg-white border border-border-hairline rounded-DEFAULT focus-within:border-black focus-within:ring-1 focus-within:ring-black w-40 transition-colors">
+<input class="bg-transparent text-text-primary font-data-mono text-data-mono focus:outline-none w-full" type="text" value="15 minutes"/>
+</div>
+<button class="h-7 w-7 flex items-center justify-center rounded-DEFAULT text-text-muted hover:text-text-primary hover:bg-[#fafafa] transition-colors" title="Remove condition" type="button">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</button>
+</div>
+<!-- Condition Row 3 -->
+<div class="flex flex-wrap items-center gap-space-xs font-data-mono-sm text-data-mono-sm">
+<span class="w-12 text-center uppercase tracking-wider font-label-caps text-label-caps text-text-primary bg-[#f4f4f5] border border-border-hairline px-1 py-1 rounded-DEFAULT font-bold">AND</span>
+<!-- Field Select -->
+<div class="flex items-center justify-between h-7 min-w-[150px] bg-white border border-border-hairline px-2 rounded-DEFAULT text-text-primary cursor-pointer hover:bg-[#fafafa] transition-colors">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-text-secondary text-[14px]">flag</span>
+<span>Priority</span>
+</span>
+<span class="material-symbols-outlined text-text-muted text-[14px]">expand_more</span>
+</div>
+<!-- Operator Select -->
+<div class="flex items-center justify-between h-7 min-w-[130px] bg-white border border-border-hairline px-2 rounded-DEFAULT text-text-primary cursor-pointer hover:bg-[#fafafa] transition-colors">
+<span class="text-text-primary font-medium">equals</span>
+<span class="material-symbols-outlined text-text-muted text-[14px]">expand_more</span>
+</div>
+<!-- Value Input -->
+<div class="flex items-center h-7 px-2 bg-white border border-border-hairline rounded-DEFAULT focus-within:border-black focus-within:ring-1 focus-within:ring-black w-40 transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-text-primary mr-1.5 shrink-0"></span>
+<input class="bg-transparent text-text-primary font-data-mono text-data-mono focus:outline-none w-full font-medium" type="text" value="P0 - Emergency"/>
+</div>
+<button class="h-7 w-7 flex items-center justify-center rounded-DEFAULT text-text-muted hover:text-text-primary hover:bg-[#fafafa] transition-colors" title="Remove condition" type="button">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</button>
+</div>
+<!-- Filter Controls Action Line -->
+<div class="flex items-center justify-between pt-space-xs mt-0.5 border-t border-border-hairline">
+<div class="flex items-center gap-space-sm">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-DEFAULT bg-white hover:bg-[#fafafa] border border-border-hairline text-text-primary font-body-compact text-body-compact transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[14px] text-text-primary">add</span>
+<span>Add condition</span>
+</button>
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-DEFAULT bg-white hover:bg-[#fafafa] border border-border-hairline text-text-secondary hover:text-text-primary font-body-compact text-body-compact transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[14px]">library_add</span>
+<span>Add group</span>
+</button>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-data-mono-sm text-data-mono-sm text-text-muted">
+            Query expression: <code class="bg-[#fafafa] border border-border-hairline px-1.5 py-0.5 rounded text-text-secondary font-data-mono-sm">amount &gt; 950000 &amp;&amp; created_at &gt;= now()-15m &amp;&amp; priority == 'P0'</code>
+</span>
+<div class="h-3 w-px bg-border-hairline"></div>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-DEFAULT bg-[#f4f4f5] border border-border-hairline text-text-primary font-label-caps text-label-caps font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-text-primary"></span>
+            0 MATCHES EVALUATED
+          </span>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 2: Persistent Data Grid Frame with Centered Empty Viewport -->
+<div class="flex flex-col w-full rounded-DEFAULT bg-white overflow-hidden border border-border-hairline shadow-sm">
+<!-- Preserved Sticky Table Header Structure for Spatial Continuity -->
+<div class="overflow-x-auto select-none bg-[#fafafa] border-b border-border-hairline">
+<div class="min-w-[1200px] flex items-center h-8 bg-[#fafafa] font-label-caps text-label-caps text-text-muted uppercase tracking-wider px-3">
+<div class="w-8 shrink-0 flex items-center justify-center">
+<input class="w-3.5 h-3.5 rounded-DEFAULT bg-white border-border-hairline opacity-40 cursor-not-allowed" disabled="" type="checkbox"/>
+</div>
+<div class="w-32 shrink-0 flex items-center gap-1 hover:text-text-primary cursor-pointer">
+<span>Order ID</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+<div class="w-44 shrink-0 flex items-center gap-1 hover:text-text-primary cursor-pointer">
+<span>Customer</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+<div class="w-28 shrink-0 flex items-center gap-1 hover:text-text-primary cursor-pointer">
+<span>Status</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+<div class="w-28 shrink-0 text-right pr-3 flex items-center justify-end gap-1 hover:text-text-primary cursor-pointer">
+<span>Amount (₹)</span>
+<span class="material-symbols-outlined text-[12px] text-text-primary">arrow_downward</span>
+</div>
+<div class="w-28 shrink-0 flex items-center gap-1 hover:text-text-primary cursor-pointer">
+<span>Region</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+<div class="w-32 shrink-0 flex items-center gap-1 hover:text-text-primary cursor-pointer">
+<span>Channel</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+<div class="w-24 shrink-0 flex items-center gap-1 hover:text-text-primary cursor-pointer">
+<span>Priority</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+<div class="w-28 shrink-0 flex items-center gap-1">
+<span>Payment</span>
+</div>
+<div class="w-16 shrink-0 text-center">
+<span>Items</span>
+</div>
+<div class="w-28 shrink-0 flex items-center gap-1 hover:text-text-primary cursor-pointer">
+<span>Created</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+<div class="w-28 shrink-0 flex items-center gap-1 hover:text-text-primary cursor-pointer">
+<span>Updated</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+<div class="flex-1 min-w-[120px] text-right">
+<span>Audit Log</span>
+</div>
+</div>
+</div>
+<!-- Empty State Interior Canvas -->
+<div class="relative w-full flex flex-col items-center justify-center py-20 px-space-lg bg-white">
+<!-- Visual Diagnostic Focal Icon & Subtle Metric Badge -->
+<div class="relative mb-space-lg flex items-center justify-center">
+<div class="w-16 h-16 rounded-xl bg-[#fafafa] border border-border-hairline flex items-center justify-center shadow-xs">
+<div class="w-11 h-11 rounded-lg bg-white flex items-center justify-center border border-border-hairline">
+<span class="material-symbols-outlined text-text-primary text-[24px]">filter_alt_off</span>
+</div>
+</div>
+<div class="absolute -top-1.5 -right-2 bg-white border border-border-hairline px-1.5 py-0.5 rounded text-text-secondary font-data-mono-sm text-data-mono-sm shadow-xs">
+          0 res
+        </div>
+</div>
+<!-- Diagnostic Messaging Hierarchy -->
+<h3 class="font-headline-md text-headline-md text-text-primary font-semibold tracking-tight text-center mb-1">
+        No orders match your filter criteria
+      </h3>
+<p class="font-body-default text-body-default text-text-secondary max-w-lg text-center leading-relaxed mb- space-xl">
+        Zero transactions satisfied the <span class="text-text-primary font-data-mono-sm font-semibold">3 active constraints</span> across the selected partition. No enterprise P0 orders exceeding ₹950,000 were logged within the last 15 minutes.
+      </p>
+<!-- Action Cluster -->
+<div class="flex flex-wrap items-center justify-center gap-space-sm mb-space-xl z-10">
+<button class="inline-flex items-center gap-space-xs h-8 px-space-lg rounded-DEFAULT bg-black hover:bg-neutral-800 text-white font-body-strong text-body-strong transition-all shadow-xs" onclick="resetTelemetryFilters()" type="button">
+<span class="material-symbols-outlined text-[16px] text-white">restart_alt</span>
+<span class="font-semibold text-white">Clear all filters</span>
+<kbd class="font-kbd-shortcut text-kbd-shortcut bg-neutral-800 text-neutral-300 px-1 py-0.5 rounded-DEFAULT ml-1 border border-neutral-700">Esc</kbd>
+</button>
+<button class="inline-flex items-center gap-space-xs h-8 px-space-md rounded-DEFAULT bg-white hover:bg-[#fafafa] border border-border-hairline text-text-primary font-body-compact text-body-compact transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px] text-text-secondary">tune</span>
+<span>Modify conditions</span>
+<kbd class="font-kbd-shortcut text-kbd-shortcut bg-[#fafafa] border border-border-hairline px-1 py-0.5 rounded-DEFAULT text-text-muted ml-1">F</kbd>
+</button>
+<button class="inline-flex items-center gap-space-xs h-8 px-space-md rounded-DEFAULT bg-white hover:bg-[#fafafa] border border-border-hairline text-text-secondary hover:text-text-primary font-body-compact text-body-compact transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+<span>Expand to 24h</span>
+</button>
+</div>
+<!-- Quick Preset Filter Jump-links -->
+<div class="flex flex-col items-center gap-space-xs pt-space-lg border-t border-border-hairline w-full max-w-xl z-10">
+<span class="font-label-caps text-label-caps text-text-muted uppercase tracking-wider">Operational Presets</span>
+<div class="flex flex-wrap items-center justify-center gap-space-xs">
+<button class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-DEFAULT bg-white hover:bg-[#fafafa] border border-border-hairline text-text-secondary hover:text-text-primary font-data-mono-sm text-data-mono-sm transition-colors shadow-xs" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-text-primary"></span>
+<span>All Active Orders (1.2k)</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-DEFAULT bg-white hover:bg-[#fafafa] border border-border-hairline text-text-secondary hover:text-text-primary font-data-mono-sm text-data-mono-sm transition-colors shadow-xs" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-text-secondary"></span>
+<span>Failed Transactions (Last 24h) [14]</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-DEFAULT bg-white hover:bg-[#fafafa] border border-border-hairline text-text-secondary hover:text-text-primary font-data-mono-sm text-data-mono-sm transition-colors shadow-xs" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-text-primary"></span>
+<span>High Value &gt; ₹50K [428]</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-DEFAULT bg-white hover:bg-[#fafafa] border border-border-hairline text-text-secondary hover:text-text-primary font-data-mono-sm text-data-mono-sm transition-colors shadow-xs" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+<span>Settlement Hold [89]</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 3: Persistent Operational Bottom Status Bar -->
+<footer class="mt-space-sm flex flex-wrap items-center justify-between px-space-md py-space-xs rounded-DEFAULT bg-white border border-border-hairline text-text-secondary font-data-mono-sm text-data-mono-sm shadow-xs select-none">
+<!-- Left: Selection / Aggregates -->
+<div class="flex items-center gap-space-md">
+<span class="flex items-center gap-1 text-text-muted">
+<span class="material-symbols-outlined text-[13px]">check_box_outline_blank</span>
+<span>0 rows selected</span>
+</span>
+<span class="text-border-hairline">•</span>
+<span>Total filtered value: <span class="text-text-primary font-semibold">₹0.00</span></span>
+<span class="text-border-hairline">•</span>
+<span class="text-text-muted">Active partition: <span class="text-text-secondary">shard_east_p02</span></span>
+</div>
+<!-- Center: Operational Count Gauge -->
+<div class="flex items-center gap-space-xs font-data-mono-bold text-data-mono-bold">
+<span class="text-text-primary">Showing 0</span>
+<span class="text-text-muted font-normal">of</span>
+<span class="text-text-primary font-normal">50,000 orders</span>
+<span class="text-text-muted font-normal">(0.00%)</span>
+</div>
+<!-- Right: Operational Keyboard Shortcuts HUD -->
+<div class="hidden lg:flex items-center gap-space-md text-text-muted">
+<span class="flex items-center gap-1 hover:text-text-primary cursor-pointer transition-colors" onclick="resetTelemetryFilters()">
+<kbd class="font-kbd-shortcut text-kbd-shortcut bg-[#fafafa] border border-border-hairline px-1 py-0.5 rounded-DEFAULT text-text-secondary">Esc</kbd>
+<span>Reset Filters</span>
+</span>
+<span class="flex items-center gap-1 hover:text-text-primary cursor-pointer transition-colors">
+<kbd class="font-kbd-shortcut text-kbd-shortcut bg-[#fafafa] border border-border-hairline px-1 py-0.5 rounded-DEFAULT text-text-secondary">⌘F</kbd>
+<span>Filter Panel</span>
+</span>
+<span class="flex items-center gap-1 hover:text-text-primary cursor-pointer transition-colors">
+<kbd class="font-kbd-shortcut text-kbd-shortcut bg-[#fafafa] border border-border-hairline px-1 py-0.5 rounded-DEFAULT text-text-secondary">R</kbd>
+<span>Poll Now</span>
+</span>
+<span class="flex items-center gap-1 hover:text-text-primary cursor-pointer transition-colors">
+<kbd class="font-kbd-shortcut text-kbd-shortcut bg-[#fafafa] border border-border-hairline px-1 py-0.5 rounded-DEFAULT text-text-secondary">?</kbd>
+<span>Shortcuts</span>
+</span>
+</div>
+</footer>
+</div>
+<script>
+  function resetTelemetryFilters() {
+    const flash = document.createElement('div');
+    flash.className = 'fixed bottom-4 right-4 bg-white border border-border-hairline text-text-primary px-3 py-2 rounded shadow-lg font-data-mono-sm text-data-mono-sm flex items-center gap-2 z-50';
+    flash.innerHTML = '<span class="material-symbols-outlined text-[15px] text-text-primary">refresh</span> Re-indexing default order telemetry stream...';
+    document.body.appendChild(flash);
+    setTimeout(() => {
+      flash.remove();
+    }, 1400);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      resetTelemetryFilters();
+    }
+  });
+</script></main></div></body></html>
