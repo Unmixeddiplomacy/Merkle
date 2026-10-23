@@ -1,55 +1,96 @@
-import { useEffect, useState } from 'react'
-import type { Order } from './types/order'
-import { fetchAndNormaliseOrders } from './utils/loadOrders'
-import './App.css'
+import { useEffect, useMemo } from 'react';
+import { useAppStore } from './store/useAppStore';
+import { fetchAndNormaliseOrders } from './utils/loadOrders';
+import { applyFilterAndSort } from './utils/filterAndSort';
+import { useUrlSync } from './hooks/useUrlSync';
+import './App.css';
 
 export default function App() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const {
+    orders,
+    isLoading,
+    error,
+    filter,
+    sort,
+    setOrders,
+    setLoading,
+    setError,
+    urlErrorBanner,
+    dismissUrlErrorBanner,
+  } = useAppStore();
 
+  // Wire URL ↔ store sync
+  useUrlSync();
+
+  // Load orders once on mount
   useEffect(() => {
     fetchAndNormaliseOrders()
       .then((data) => {
-        setOrders(data)
+        setOrders(data);
       })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : String(err))
+        setError(err instanceof Error ? err.message : String(err));
       })
       .finally(() => {
-        setIsLoading(false)
-      })
-  }, []) // run exactly once on mount
+        setLoading(false);
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Derived: filtered + sorted view — only recomputes when inputs change
+  const visibleOrders = useMemo(
+    () => applyFilterAndSort(orders, filter, sort),
+    [orders, filter, sort]
+  );
+
+  // ── Loading ────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="app-state">
-        <div className="spinner" aria-label="Loading" />
+        <div className="spinner" aria-label="Loading orders" />
         <p>Loading orders…</p>
       </div>
-    )
+    );
   }
 
+  // ── Error ──────────────────────────────────────────────────────────────────
   if (error) {
     return (
       <div className="app-state app-state--error">
         <p>⚠ Failed to load orders</p>
         <pre>{error}</pre>
       </div>
-    )
+    );
   }
 
-  // Placeholder — the real grid will be built in Steps 4-8
+  // ── Main layout (placeholder — full UI in Steps 4-8) ──────────────────────
   return (
     <div className="app">
+      {/* URL error banner */}
+      {urlErrorBanner && (
+        <div className="url-banner" role="alert">
+          <span>⚠ {urlErrorBanner}</span>
+          <button onClick={dismissUrlErrorBanner} aria-label="Dismiss">✕</button>
+        </div>
+      )}
+
       <header className="topbar">
         <h1>Orders Explorer</h1>
-        <span>{orders.length.toLocaleString()} orders loaded</span>
+        <span className="result-count">
+          {visibleOrders.length.toLocaleString()} of{' '}
+          {orders.length.toLocaleString()} orders
+        </span>
       </header>
+
       <main className="main-placeholder">
-        <p>Step 1 complete ✓ — {orders.length.toLocaleString()} orders normalised &amp; deduplicated.</p>
-        <p>First order: <code>{orders[0]?.id}</code> — ₹{orders[0]?.amountINR.toFixed(2)}</p>
+        <p>Step 2 complete ✓</p>
+        <p>
+          Store + URL sync wired. Showing{' '}
+          <strong>{visibleOrders.length.toLocaleString()}</strong> orders.
+        </p>
+        <p>
+          First order: <code>{visibleOrders[0]?.id}</code>
+        </p>
       </main>
     </div>
-  )
+  );
 }

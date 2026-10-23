@@ -93,3 +93,38 @@
   font-family: monospace;
   color: #4a7cf8;
 }
+
+/* URL error banner */
+.url-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  background: #2a1a0a;
+  border-bottom: 1px solid #f8c94a44;
+  color: #f8c94a;
+  font-size: 13px;
+  gap: 12px;
+}
+
+.url-banner button {
+  background: none;
+  border: none;
+  color: #f8c94a;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.url-banner button:hover {
+  background: #f8c94a22;
+}
+
+/* Result count */
+.result-count {
+  font-size: 13px;
+  color: #8892aa;
+}
+
