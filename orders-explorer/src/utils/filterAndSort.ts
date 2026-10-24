@@ -8,6 +8,7 @@ import type {
   TextCondition,
 } from '../types/filter';
 import type { SortState } from '../types/sort';
+import { sortOrders } from './sort';
 
 // ─── Condition evaluators ─────────────────────────────────────────────────────
 
@@ -153,41 +154,6 @@ function matchesFilter(order: Order, filter: FilterState): boolean {
   });
 }
 
-// ─── Sort application ─────────────────────────────────────────────────────────
-
-function compareOrders(a: Order, b: Order, sort: SortState): number {
-  const { columnId, direction } = sort;
-  const mul = direction === 'asc' ? 1 : -1;
-
-  const av = a[columnId as keyof Order];
-  const bv = b[columnId as keyof Order];
-
-  // ── Null-last logic for updatedAt and priority ──
-  // Null values always go last, regardless of direction.
-  const aIsNull = av === null || av === undefined;
-  const bIsNull = bv === null || bv === undefined;
-  if (aIsNull && bIsNull) return 0;
-  if (aIsNull) return 1;   // a goes after b (last), always
-  if (bIsNull) return -1;  // b goes after a (last), always
-
-  // ── Date columns ──
-  if (av instanceof Date && bv instanceof Date) {
-    return (av.getTime() - bv.getTime()) * mul;
-  }
-
-  // ── Number columns (amountINR, itemCount, priority) ──
-  if (typeof av === 'number' && typeof bv === 'number') {
-    return (av - bv) * mul;
-  }
-
-  // ── String columns ──
-  if (typeof av === 'string' && typeof bv === 'string') {
-    return av.localeCompare(bv, undefined, { sensitivity: 'base' }) * mul;
-  }
-
-  // ── Fallback: coerce to string ──
-  return String(av).localeCompare(String(bv)) * mul;
-}
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
@@ -213,9 +179,6 @@ export function applyFilterAndSort(
       ? orders // fast path: no filter active, skip the loop entirely
       : orders.filter((o) => matchesFilter(o, filter));
 
-  // Sort
-  if (sort === null) return filtered;
-
-  // Shallow copy before sort — do NOT mutate the filtered array in place
-  return [...filtered].sort((a, b) => compareOrders(a, b, sort));
+  // Sort — delegated to sort.ts (single source of truth)
+  return sortOrders(filtered, sort);
 }
