@@ -1,107 +1,125 @@
-/* ─── Google Fonts ───────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Hanken+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+/* ─────────────────────────────────────────────────────────────────────────────
+   index.css — Global design tokens & base reset
+   Design System: Executive Monochrome (zinc palette, light mode)
+   Fonts: Geist · Hanken Grotesk · JetBrains Mono
+───────────────────────────────────────────────────────────────────────────── */
 
-/* ─── Design tokens ──────────────────────────────────────────────────────────── */
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* html & body MUST be 100% height with overflow:hidden so grid scrolls,
+   not the page. This is the critical architectural rule for data-dense UIs. */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── Design tokens ───────────────────────────────────────────────────────── */
 :root {
-  /* Surfaces */
-  --surface-canvas:     #ffffff;
-  --surface-subtle:     #fafafa;
-  --surface-container:  #f4f4f5;
+  /* ── Surface hierarchy (light mode — zinc palette) ─────────────────────── */
+  --surface-canvas:       #f9f9f9;  /* outer app ground */
+  --surface-base:         #ffffff;  /* cards, panels, grid rows */
+  --surface-subtle:       #fafafa;  /* sidebar, alt rows, container bg */
+  --surface-container:    #f4f4f5;  /* table header, badges, chips */
+  --surface-container-hi: #e8e8e8;  /* hover highlights */
 
-  /* Borders */
-  --border-hairline:    #e4e4e7;
-  --border-default:     #d4d4d8;
+  /* ── Borders ───────────────────────────────────────────────────────────── */
+  --border-hairline:  #e4e4e7;  /* internal dividers, card borders */
+  --border-default:   #d4d4d8;  /* primary structural panels, inputs */
+  --border-strong:    #a1a1aa;  /* focused input ring */
 
-  /* Text */
-  --text-primary:       #09090b;
-  --text-secondary:     #52525b;
-  --text-muted:         #71717a;
-  --text-faint:         #a1a1aa;
+  /* ── Typography ────────────────────────────────────────────────────────── */
+  --text-primary:    #09090b;  /* zinc-950 — main content */
+  --text-secondary:  #52525b;  /* zinc-600 — supporting labels */
+  --text-muted:      #71717a;  /* zinc-500 — captions, placeholders */
+  --text-faint:      #a1a1aa;  /* zinc-400 — very subtle */
 
-  /* Fonts */
-  --font-sans:    'Geist', system-ui, sans-serif;
-  --font-display: 'Hanken Grotesk', system-ui, sans-serif;
-  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  /* ── Fonts ─────────────────────────────────────────────────────────────── */
+  --font-sans:    'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Hanken Grotesk', sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 
-  /* Radii */
+  /* ── Grid dimensions ───────────────────────────────────────────────────── */
+  --row-height:       32px;   /* ultra-dense: 32px per row */
+  --header-height:    32px;
+  --topbar-height:    44px;
+  --sidebar-width:    224px;
+  --statusbar-height: 32px;
+
+  /* ── Border radii ───────────────────────────────────────────────────────── */
   --radius-sm:  2px;
   --radius:     4px;
   --radius-md:  6px;
   --radius-lg:  8px;
   --radius-xl:  12px;
 
-  /* Shadows */
-  --shadow-xs: 0 1px 2px 0 rgba(9,9,11,.05);
-  --shadow-sm: 0 1px 2px 0 rgba(9,9,11,.05), 0 4px 12px 0 rgba(9,9,11,.04);
+  /* ── Shadows ────────────────────────────────────────────────────────────── */
+  --shadow-xs:  0 1px 2px 0 rgba(9,9,11,.05), 0 4px 12px 0 rgba(9,9,11,.04);
+
+  /* ── Status pill colors ─────────────────────────────────────────────────── */
+  --pill-pending-bg:    #fefce8; --pill-pending-border:    #fde047; --pill-pending-text:    #854d0e;
+  --pill-processing-bg: #eff6ff; --pill-processing-border: #bfdbfe; --pill-processing-text: #1e40af;
+  --pill-shipped-bg:    #f5f3ff; --pill-shipped-border:    #ddd6fe; --pill-shipped-text:    #6d28d9;
+  --pill-delivered-bg:  #f0fdf4; --pill-delivered-border:  #bbf7d0; --pill-delivered-text:  #166534;
+  --pill-cancelled-bg:  #fff1f2; --pill-cancelled-border:  #fecdd3; --pill-cancelled-text:  #be123c;
+
+  /* ── Priority badge colors ──────────────────────────────────────────────── */
+  --pri-1-bg: #fee2e2; --pri-1-border: #fca5a5; --pri-1-text: #991b1b;
+  --pri-2-bg: #fef9c3; --pri-2-border: #fde047; --pri-2-text: #854d0e;
+  --pri-3-bg: #f4f4f5; --pri-3-border: #d4d4d8; --pri-3-text: #52525b;
 }
 
-/* ─── Global reset ───────────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; height: 100%; }
+/* ── Base element styles ─────────────────────────────────────────────────── */
 body {
   font-family: var(--font-sans);
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 18px;
   color: var(--text-primary);
   background: var(--surface-canvas);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overscroll-behavior: none;
 }
-#root { display: contents; }
 
-/* Hide scrollbars globally (dense ops tool) */
-::-webkit-scrollbar { display: none; }
-* { scrollbar-width: none; }
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
 
-/* ─── Material Symbols icon font class ──────────────────────────────────────── */
+input, select, textarea {
+  font-family: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ── Scrollbar — hide webkit, keep function ───────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+/* ── Material Symbols utility ────────────────────────────────────────────── */
 .material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 16px;
-  display: inline-block;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
   vertical-align: middle;
   user-select: none;
+  line-height: 1;
 }
 
-/* ─── App shell ──────────────────────────────────────────────────────────────── */
-.app-shell {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-  background: var(--surface-canvas);
+/* ── Tabular numbers for all mono text (alignment in tables) ─────────────── */
+.font-mono,
+[class*="font-mono"] {
+  font-variant-numeric: tabular-nums;
 }
-
-/* ─── Loading / error states ─────────────────────────────────────────────────── */
-.app-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  gap: 12px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-muted);
-}
-.app-state--error { color: #ba1a1a; }
-.spinner {
-  width: 20px; height: 20px;
-  border: 2px solid var(--border-hairline);
-  border-top-color: var(--text-primary);
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }

@@ -4,12 +4,13 @@ import { fetchAndNormaliseOrders } from './utils/loadOrders';
 import { applyFilterAndSort } from './utils/filterAndSort';
 import { useUrlSync } from './hooks/useUrlSync';
 import { FilterBuilder } from './components/FilterBuilder/FilterBuilder';
+import { Grid } from './components/Grid/Grid';
 import { exportToCsv, buildExportFilename } from './utils/exportCsv';
+import { EMPTY_FILTER } from './types/filter';
 import type { FilterState } from './types/filter';
 import './index.css';
 import './App.css';
 
-/** Max selected IDs before we skip writing sel to the URL (matches useUrlSync constant). */
 const MAX_SEL_IN_URL = 500;
 
 export default function App() {
@@ -30,10 +31,9 @@ export default function App() {
 
   useUrlSync();
 
-  // Toast state for export feedback
   const [exportToast, setExportToast] = useState<string | null>(null);
 
-  // Load orders once on mount
+  // Load orders on mount
   useEffect(() => {
     fetchAndNormaliseOrders()
       .then((data) => setOrders(data))
@@ -43,19 +43,18 @@ export default function App() {
       .finally(() => setLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Derived: filtered + sorted rows — recomputes only when inputs change
+  // Derived: filtered + sorted
   const visibleOrders = useMemo(
     () => applyFilterAndSort(orders, filter, sort),
     [orders, filter, sort]
   );
 
-  // Visible+selected rows: only rows in the current filtered view AND selected
+  // Visible + selected = export rows
   const exportRows = useMemo(
     () => visibleOrders.filter((o) => selectedIds.has(o.id)),
     [visibleOrders, selectedIds]
   );
 
-  // Whether the selection was too large to persist in the URL
   const selTooLargeForUrl = selectedIds.size > MAX_SEL_IN_URL;
 
   const handleFilterChange = useCallback(
@@ -63,43 +62,58 @@ export default function App() {
     [setFilter]
   );
 
-  // ── Export ─────────────────────────────────────────────────────────────────
+  const handleClearFilters = useCallback(() => {
+    setFilter(EMPTY_FILTER);
+  }, [setFilter]);
+
+  // Open filter builder via ⌘F — FilterBuilder handles the keyboard shortcut itself,
+  // but we expose this for the empty state "Modify conditions" button.
+  const handleOpenFilterBuilder = useCallback(() => {
+    // Dispatch a synthetic Ctrl+F to trigger FilterBuilder's keyboard handler
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true }));
+  }, []);
+
+  // Export CSV
   const handleExportCsv = useCallback(() => {
     if (exportRows.length === 0) {
       setExportToast('No visible rows selected. Select rows to export.');
       setTimeout(() => setExportToast(null), 4000);
       return;
     }
-    const result = exportToCsv(exportRows, buildExportFilename());
-    if (result === 'empty') {
-      setExportToast('No visible rows selected. Select rows to export.');
-      setTimeout(() => setExportToast(null), 4000);
-    }
+    exportToCsv(exportRows, buildExportFilename());
   }, [exportRows]);
 
-  // Alt+E keyboard shortcut for Export
+  // Alt+E shortcut
   useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.altKey && e.key === 'e') {
-        e.preventDefault();
-        handleExportCsv();
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    const handler = (e: KeyboardEvent) => {
+      if (e.altKey && e.key === 'e') { e.preventDefault(); handleExportCsv(); }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
   }, [handleExportCsv]);
 
-  // ── Loading ────────────────────────────────────────────────────────────────
+  // Esc = clear filters
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClearFilters();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [handleClearFilters]);
+
+  // ── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="app-state">
         <div className="spinner" aria-label="Loading orders" />
-        <p>Loading orders…</p>
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-muted)' }}>
+          Loading orders…
+        </p>
       </div>
     );
   }
 
-  // ── Error ──────────────────────────────────────────────────────────────────
+  // ── Error ────────────────────────────────────────────────────────────────
   if (error) {
     return (
       <div className="app-state app-state--error">
@@ -109,7 +123,7 @@ export default function App() {
     );
   }
 
-  // ── Full shell ─────────────────────────────────────────────────────────────
+  // ── Full shell ───────────────────────────────────────────────────────────
   return (
     <div className="layout">
       {/* URL error banner */}
@@ -120,7 +134,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Selection too large for URL banner */}
+      {/* Large selection URL warning */}
       {selTooLargeForUrl && (
         <div className="url-banner url-banner--info" role="status">
           <span>ℹ Selection not saved in URL (too large — {selectedIds.size.toLocaleString()} rows selected)</span>
@@ -129,12 +143,10 @@ export default function App() {
 
       {/* Export toast */}
       {exportToast && (
-        <div className="export-toast" role="alert">
-          {exportToast}
-        </div>
+        <div className="export-toast" role="alert">{exportToast}</div>
       )}
 
-      {/* ── Top bar ───────────────────────────────────────────────────────── */}
+      {/* ── Top bar ─────────────────────────────────────────────────────── */}
       <header className="topbar">
         <div className="topbar__left">
           <div className="topbar__brand">
@@ -165,13 +177,13 @@ export default function App() {
 
         <div className="topbar__right">
           <div className="topbar__view-toggle">
-            <button className="topbar__view-btn active" title="Table View">
+            <button className="topbar__view-btn active" title="Table View" type="button">
               <span className="material-symbols-outlined">table_rows</span>
             </button>
-            <button className="topbar__view-btn" title="Split Inspector">
+            <button className="topbar__view-btn" title="Split Inspector" type="button">
               <span className="material-symbols-outlined">vertical_split</span>
             </button>
-            <button className="topbar__view-btn" title="Raw Log">
+            <button className="topbar__view-btn" title="Raw Log" type="button">
               <span className="material-symbols-outlined">data_array</span>
             </button>
           </div>
@@ -186,7 +198,7 @@ export default function App() {
                 ? 'Select visible rows to export'
                 : `Export ${exportRows.length.toLocaleString()} visible selected rows to CSV`
             }
-            aria-label={`Export ${exportRows.length} visible selected rows to CSV`}
+            type="button"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 15 }}>download</span>
             Export CSV
@@ -198,7 +210,7 @@ export default function App() {
 
           <div className="topbar__divider" />
           <div className="topbar__right-group">
-            <span className="topbar__notif material-symbols-outlined">notifications</span>
+            <span className="topbar__notif material-symbols-outlined" title="Incidents">notifications</span>
             <div className="topbar__user">
               <div className="topbar__avatar">OP</div>
               <div className="topbar__user-info">
@@ -210,7 +222,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* ── Sidebar ───────────────────────────────────────────────────────── */}
+      {/* ── Sidebar ─────────────────────────────────────────────────────── */}
       <aside className="sidebar" aria-label="Navigation">
         <div>
           <div className="sidebar__section-label">Queues &amp; Telemetry</div>
@@ -220,7 +232,11 @@ export default function App() {
                 <span className="material-symbols-outlined" style={{ fontSize: 16 }}>orders</span>
                 Live Orders
               </span>
-              <span className="sidebar__nav-badge">{visibleOrders.length >= 1000 ? `${(visibleOrders.length / 1000).toFixed(1)}k` : visibleOrders.length}</span>
+              <span className="sidebar__nav-badge">
+                {visibleOrders.length >= 1000
+                  ? `${(visibleOrders.length / 1000).toFixed(1)}k`
+                  : visibleOrders.length}
+              </span>
             </a>
             <a href="#" className="sidebar__nav-item">
               <span className="sidebar__nav-item-left">
@@ -256,18 +272,16 @@ export default function App() {
         </div>
       </aside>
 
-      {/* ── Content area ──────────────────────────────────────────────────── */}
+      {/* ── Content area ────────────────────────────────────────────────── */}
       <div className="content-area">
         <div className="content-inner">
-          {/* Sub-header breadcrumb */}
+          {/* Sub-header */}
           <div className="subheader">
             <div className="subheader__left">
               <span className="subheader__breadcrumb">Telemetry Query</span>
               <span className="subheader__slash">/</span>
               <span className="subheader__page">Transactions Live Pipeline</span>
-              <span className="subheader__count-badge">
-                {visibleOrders.length.toLocaleString()} MATCHES
-              </span>
+              <span className="subheader__count-badge">{visibleOrders.length.toLocaleString()} MATCHES</span>
             </div>
             <div className="subheader__right">
               <span className="subheader__stat">
@@ -289,24 +303,54 @@ export default function App() {
             totalCount={orders.length}
           />
 
-          {/* Grid placeholder — built in Step 4 */}
-          <div
-            style={{
-              flex: 1,
-              background: 'white',
-              border: '1px solid var(--border-hairline)',
-              borderRadius: 'var(--radius-lg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--text-muted)',
-              overflow: 'hidden',
-            }}
-          >
-            Data grid — Step 4
+          {/* Metrics strip */}
+          <div className="metrics-strip">
+            <div className="metric-card">
+              <div className="metric-card__left">
+                <span className="metric-card__label">Failed Routing Rate</span>
+                <span className="metric-card__value">3.82%</span>
+              </div>
+              <svg className="metric-card__sparkline" viewBox="0 0 60 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <polyline points="0,15 10,12 20,18 30,8 40,14 50,4 60,6" />
+              </svg>
+            </div>
+            <div className="metric-card">
+              <div className="metric-card__left">
+                <span className="metric-card__label">Avg Settlement Latency</span>
+                <span className="metric-card__value">184 ms</span>
+              </div>
+              <svg className="metric-card__sparkline" viewBox="0 0 60 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <polyline points="0,8 10,10 20,5 30,12 40,6 50,7 60,3" />
+              </svg>
+            </div>
+            <div className="metric-card">
+              <div className="metric-card__left">
+                <span className="metric-card__label">Held in Escrow (24H)</span>
+                <span className="metric-card__value">₹9.42M</span>
+              </div>
+              <svg className="metric-card__sparkline" viewBox="0 0 60 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <polyline points="0,18 12,14 24,15 36,9 48,11 60,2" />
+              </svg>
+            </div>
+            <div className="metric-card">
+              <div className="metric-card__left">
+                <span className="metric-card__label">Circuit Breaker</span>
+                <span className="metric-card__status">
+                  <span style={{ width: 6, height: 6, background: '#16a34a', borderRadius: '50%', display: 'inline-block' }} />
+                  NOMINAL / ARMED
+                </span>
+              </div>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--text-secondary)' }}>verified</span>
+            </div>
           </div>
+
+          {/* Data Grid */}
+          <Grid
+            orders={visibleOrders}
+            totalCount={orders.length}
+            onClearFilters={handleClearFilters}
+            onOpenFilterBuilder={handleOpenFilterBuilder}
+          />
         </div>
       </div>
     </div>

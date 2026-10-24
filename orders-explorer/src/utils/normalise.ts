@@ -71,7 +71,7 @@ function parseCreatedAt(value: unknown): Date | null {
   }
 
   // ── Format 1: ISO with timezone (contains 'Z' or '+' offset) ──
-  if (raw.endsWith('Z') || /[+\-]\d{2}:\d{2}$/.test(raw)) {
+  if (raw.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(raw)) {
     const d = new Date(raw);
     return isNaN(d.getTime()) ? null : d;
   }
