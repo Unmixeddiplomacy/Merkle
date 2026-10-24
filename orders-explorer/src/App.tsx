@@ -1,12 +1,16 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 import { useAppStore } from './store/useAppStore';
 import { fetchAndNormaliseOrders } from './utils/loadOrders';
 import { applyFilterAndSort } from './utils/filterAndSort';
 import { useUrlSync } from './hooks/useUrlSync';
 import { FilterBuilder } from './components/FilterBuilder/FilterBuilder';
+import { exportToCsv, buildExportFilename } from './utils/exportCsv';
 import type { FilterState } from './types/filter';
 import './index.css';
 import './App.css';
+
+/** Max selected IDs before we skip writing sel to the URL (matches useUrlSync constant). */
+const MAX_SEL_IN_URL = 500;
 
 export default function App() {
   const {
@@ -15,6 +19,7 @@ export default function App() {
     error,
     filter,
     sort,
+    selectedIds,
     setOrders,
     setLoading,
     setError,
@@ -24,6 +29,9 @@ export default function App() {
   } = useAppStore();
 
   useUrlSync();
+
+  // Toast state for export feedback
+  const [exportToast, setExportToast] = useState<string | null>(null);
 
   // Load orders once on mount
   useEffect(() => {
@@ -41,10 +49,45 @@ export default function App() {
     [orders, filter, sort]
   );
 
+  // Visible+selected rows: only rows in the current filtered view AND selected
+  const exportRows = useMemo(
+    () => visibleOrders.filter((o) => selectedIds.has(o.id)),
+    [visibleOrders, selectedIds]
+  );
+
+  // Whether the selection was too large to persist in the URL
+  const selTooLargeForUrl = selectedIds.size > MAX_SEL_IN_URL;
+
   const handleFilterChange = useCallback(
     (newFilter: FilterState) => setFilter(newFilter),
     [setFilter]
   );
+
+  // ── Export ─────────────────────────────────────────────────────────────────
+  const handleExportCsv = useCallback(() => {
+    if (exportRows.length === 0) {
+      setExportToast('No visible rows selected. Select rows to export.');
+      setTimeout(() => setExportToast(null), 4000);
+      return;
+    }
+    const result = exportToCsv(exportRows, buildExportFilename());
+    if (result === 'empty') {
+      setExportToast('No visible rows selected. Select rows to export.');
+      setTimeout(() => setExportToast(null), 4000);
+    }
+  }, [exportRows]);
+
+  // Alt+E keyboard shortcut for Export
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.altKey && e.key === 'e') {
+        e.preventDefault();
+        handleExportCsv();
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleExportCsv]);
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -77,6 +120,20 @@ export default function App() {
         </div>
       )}
 
+      {/* Selection too large for URL banner */}
+      {selTooLargeForUrl && (
+        <div className="url-banner url-banner--info" role="status">
+          <span>ℹ Selection not saved in URL (too large — {selectedIds.size.toLocaleString()} rows selected)</span>
+        </div>
+      )}
+
+      {/* Export toast */}
+      {exportToast && (
+        <div className="export-toast" role="alert">
+          {exportToast}
+        </div>
+      )}
+
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
       <header className="topbar">
         <div className="topbar__left">
@@ -96,6 +153,12 @@ export default function App() {
           <span className="topbar__count-num">{visibleOrders.length.toLocaleString()}</span>
           <span>of</span>
           <span style={{ color: 'var(--text-secondary)' }}>{orders.length.toLocaleString()} orders</span>
+          {exportRows.length > 0 && (
+            <>
+              <span className="topbar__sep">|</span>
+              <span className="topbar__sel-count">{exportRows.length.toLocaleString()} selected</span>
+            </>
+          )}
           <span className="topbar__sep">|</span>
           <span className="topbar__latency">Stream: 42ms</span>
         </div>
@@ -112,13 +175,29 @@ export default function App() {
               <span className="material-symbols-outlined">data_array</span>
             </button>
           </div>
-          <button className="topbar__action-btn">
+
+          <button
+            id="export-csv-btn"
+            className={`topbar__action-btn${exportRows.length === 0 ? ' topbar__action-btn--disabled' : ''}`}
+            onClick={handleExportCsv}
+            disabled={exportRows.length === 0}
+            title={
+              exportRows.length === 0
+                ? 'Select visible rows to export'
+                : `Export ${exportRows.length.toLocaleString()} visible selected rows to CSV`
+            }
+            aria-label={`Export ${exportRows.length} visible selected rows to CSV`}
+          >
             <span className="material-symbols-outlined" style={{ fontSize: 15 }}>download</span>
             Export CSV
+            {exportRows.length > 0 && (
+              <span className="topbar__export-count">{exportRows.length}</span>
+            )}
             <kbd className="topbar__kbd">⌥E</kbd>
           </button>
+
           <div className="topbar__divider" />
-          <div className="topbar__right">
+          <div className="topbar__right-group">
             <span className="topbar__notif material-symbols-outlined">notifications</span>
             <div className="topbar__user">
               <div className="topbar__avatar">OP</div>
