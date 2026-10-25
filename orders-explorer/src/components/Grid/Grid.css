@@ -136,13 +136,19 @@
 .grid-th__resize {
   color: var(--border-default);
   cursor: col-resize;
-  padding: 0 2px;
+  padding: 0 4px;
   font-size: 11px;
   flex-shrink: 0;
-  /* Suppress focus ring since it has tabIndex=-1 */
   outline: none;
+  user-select: none;
 }
 .grid-th__resize:hover { color: var(--text-primary); }
+
+.grid-wrapper--resizing,
+.grid-wrapper--resizing * {
+  user-select: none !important;
+  cursor: col-resize !important;
+}
 
 /* ── Checkbox / pin sticky column ───────────────────────────────────────── */
 .grid-th--check,
@@ -817,61 +823,4 @@
 .statusbar__help-btn:hover { color: var(--text-primary); }
 .statusbar__help-btn:focus-visible { outline: 1px solid var(--text-primary); outline-offset: 2px; }
 
-/* ── Metrics strip (stat cards) ──────────────────────────────────────────── */
-.metrics-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  flex-shrink: 0;
-}
 
-.metric-card {
-  background: var(--surface-base);
-  border: 1px solid var(--border-hairline);
-  border-radius: var(--radius-md);
-  padding: 8px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: var(--shadow-xs);
-}
-
-.metric-card__left { display: flex; flex-direction: column; gap: 2px; }
-
-.metric-card__label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.metric-card__value {
-  font-family: var(--font-mono);
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.01em;
-}
-
-.metric-card__sparkline {
-  width: 56px;
-  height: 24px;
-  color: var(--text-muted);
-}
-
-.metric-card__status {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 7px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: var(--radius);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #166534;
-}

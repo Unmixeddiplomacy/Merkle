@@ -5,6 +5,7 @@ import type { SortState } from '../../types/sort';
 import { useAppStore } from '../../store/useAppStore';
 import { useSortColumn } from '../../hooks/useSortColumn';
 import { formatINR, formatDate } from '../../utils/format';
+import { useVirtualRows } from './useVirtualRows';
 import './Grid.css';
 
 // ─── Column definitions ────────────────────────────────────────────────────
@@ -33,6 +34,22 @@ const COLUMNS: ColDef[] = [
   { id: 'notes',         label: 'Notes / Logs', sortable: false, thClass: 'grid-col-notes',    tdClass: 'grid-td--notes' },
 ];
 
+const DEFAULT_WIDTHS: Record<string, number> = {
+  check: 36,
+  id: 130,
+  customer: 160,
+  status: 110,
+  amountINR: 120,
+  region: 90,
+  channel: 80,
+  priority: 80,
+  paymentMethod: 100,
+  itemCount: 70,
+  createdAt: 150,
+  updatedAt: 150,
+  notes: 200,
+};
+
 const ROW_HEIGHT = 32; // matches --row-height CSS var
 
 // ─── Status pill ────────────────────────────────────────────────────────────
@@ -60,7 +77,7 @@ const PRIORITY_LABELS: Record<number, string> = { 1: 'P1-HIGH', 2: 'P2-NORM', 3:
 
 function PriorityBadge({ priority }: { priority: number | null }) {
   if (priority === null) {
-    return <span className="priority-badge--none">\u2014</span>;
+    return <span className="priority-badge--none">—</span>;
   }
   return (
     <span className={`priority-badge priority-badge--${priority}`}>
@@ -94,9 +111,10 @@ interface ThProps {
   onSortClick: (id: string) => void;
   pinnedColumn: string | null;
   onPinColumn: (colId: string | null) => void;
+  onStartResize: (colId: string, e: ReactMouseEvent) => void;
 }
 
-function Th({ col, sort, onSortClick, pinnedColumn, onPinColumn }: ThProps) {
+function Th({ col, sort, onSortClick, pinnedColumn, onPinColumn, onStartResize }: ThProps) {
   const dir = sort?.columnId === col.id ? sort.direction : null;
   const isActive = sort?.columnId === col.id;
   const isPinned = pinnedColumn === col.id;
@@ -155,11 +173,12 @@ function Th({ col, sort, onSortClick, pinnedColumn, onPinColumn }: ThProps) {
         ) : (
           <span className="grid-th__label">{col.label}</span>
         )}
-        {/* Resize handle: aria-hidden so screen readers skip it */}
+        {/* Resize handle */}
         <span
           className="grid-th__resize"
           aria-hidden="true"
           tabIndex={-1}
+          onMouseDown={(e) => onStartResize(col.id, e)}
         >
           |
         </span>
@@ -448,7 +467,7 @@ function EmptyState({ totalCount, onClearFilters, onOpenFilterBuilder }: EmptySt
               color: 'var(--text-muted)',
             }}
           >
-            \u2318F
+            ⌘F
           </span>
         </button>
       </div>
@@ -485,7 +504,7 @@ function StatusBar({
           <span className="statusbar__stat-val">{selectedCount}</span>
           <span>rows selected</span>
         </span>
-        <span className="statusbar__dot">\u2022</span>
+        <span className="statusbar__dot">•</span>
         <span className="statusbar__stat">
           Total filtered:
           <span className="statusbar__stat-val">{formatINR(totalFilteredAmount)}</span>
@@ -506,7 +525,7 @@ function StatusBar({
       {/* Right: shortcuts hint + help */}
       <div className="statusbar__right">
         <span className="statusbar__shortcut">
-          <kbd className="statusbar__kbd">\u2191/\u2193</kbd>
+          <kbd className="statusbar__kbd">↑/↓</kbd>
           <span>Navigate</span>
         </span>
         <span className="statusbar__shortcut">
@@ -518,11 +537,11 @@ function StatusBar({
           <span>Detail</span>
         </span>
         <span className="statusbar__shortcut">
-          <kbd className="statusbar__kbd">\u2318F</kbd>
+          <kbd className="statusbar__kbd">⌘F</kbd>
           <span>Filter</span>
         </span>
         <span className="statusbar__shortcut">
-          <kbd className="statusbar__kbd">\u2325E</kbd>
+          <kbd className="statusbar__kbd">⌥E</kbd>
           <span>Export</span>
         </span>
         <button
@@ -560,15 +579,69 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
     pinnedColumn,
     setPinnedColumn,
   } = useAppStore();
+  const selectRange = useAppStore((s) => s.selectRange);
+  const setSelectedIdsAction = useAppStore((s) => s.setSelectedIds);
   const { handleColumnClick } = useSortColumn();
 
   const gridScrollRef = useRef<HTMLDivElement>(null);
   const prevFocusRef = useRef<HTMLElement | null>(null);
+  const lastClickedIndexRef = useRef<number | null>(null);
 
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
   const [showHelp, setShowHelp] = useState(false);
 
-  // ── Select-all ────────────────────────────────────────────────────────────
+  // ── Column width resizing (local state — does NOT trigger store or row re-renders) ──
+  const [colWidths, setColWidths] = useState<Record<string, number>>(DEFAULT_WIDTHS);
+  const [isResizing, setIsResizing] = useState(false);
+  const resizingRef = useRef<{ colId: string; startX: number; startWidth: number } | null>(null);
+
+  const handleStartResize = useCallback(
+    (colId: string, e: ReactMouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsResizing(true);
+      const startWidth = colWidths[colId] ?? DEFAULT_WIDTHS[colId] ?? 120;
+      resizingRef.current = { colId, startX: e.clientX, startWidth };
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        if (!resizingRef.current) return;
+        const delta = moveEvent.clientX - resizingRef.current.startX;
+        const newWidth = Math.max(50, resizingRef.current.startWidth + delta);
+        setColWidths((prev) => ({ ...prev, [resizingRef.current!.colId]: newWidth }));
+      };
+
+      const handleMouseUp = () => {
+        setIsResizing(false);
+        resizingRef.current = null;
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    },
+    [colWidths]
+  );
+
+  // ── Virtualisation: ~20-30 rows in DOM ──────────────────────────────────────
+  const {
+    startIndex,
+    endIndex,
+    paddingTop,
+    paddingBottom,
+  } = useVirtualRows({
+    totalRows: orders.length,
+    rowHeight: ROW_HEIGHT,
+    overscan: 5,
+    containerRef: gridScrollRef,
+  });
+
+  const visibleOrders = useMemo(
+    () => orders.slice(startIndex, endIndex + 1),
+    [orders, startIndex, endIndex]
+  );
+
+  // ── Select-all & Range selection ───────────────────────────────────────────
   const allVisibleIds = useMemo(() => orders.map((o) => o.id), [orders]);
   const selectedCount = useMemo(
     () => allVisibleIds.filter((id) => selectedIds.has(id)).length,
@@ -576,8 +649,6 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
   );
   const allSelected = allVisibleIds.length > 0 && selectedCount === allVisibleIds.length;
   const someSelected = selectedCount > 0 && selectedCount < allVisibleIds.length;
-
-  const setSelectedIdsAction = useAppStore((s) => s.setSelectedIds);
 
   const handleSelectAll = useCallback(() => {
     if (allSelected) {
@@ -591,8 +662,33 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
     }
   }, [allSelected, allVisibleIds, selectedIds, setSelectedIdsAction]);
 
+  const handleRowClick = useCallback(
+    (rowIdx: number, orderId: string, e: ReactMouseEvent) => {
+      if (e.shiftKey && lastClickedIndexRef.current !== null) {
+        selectRange(lastClickedIndexRef.current, rowIdx, allVisibleIds);
+      } else {
+        toggleRowSelection(orderId);
+        lastClickedIndexRef.current = rowIdx;
+      }
+    },
+    [allVisibleIds, selectRange, toggleRowSelection]
+  );
+
+  const handleCheckboxClick = useCallback(
+    (rowIdx: number, orderId: string, e: ReactMouseEvent) => {
+      e.stopPropagation();
+      if (e.shiftKey && lastClickedIndexRef.current !== null) {
+        selectRange(lastClickedIndexRef.current, rowIdx, allVisibleIds);
+      } else {
+        toggleRowSelection(orderId);
+        lastClickedIndexRef.current = rowIdx;
+      }
+    },
+    [allVisibleIds, selectRange, toggleRowSelection]
+  );
+
   const totalFilteredAmount = useMemo(
-    () => orders.reduce((sum, o) => sum + o.amountINR, 0),
+    () => orders.reduce((sum, o) => sum + (o.amountINR || 0), 0),
     [orders]
   );
 
@@ -691,8 +787,6 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
           break;
         }
         case ' ': {
-          // Only toggle selection when grid wrapper itself is focused
-          // (not when a child input, textarea, or select has focus)
           const active = document.activeElement;
           const isChildInput =
             active instanceof HTMLInputElement ||
@@ -700,7 +794,10 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
             active instanceof HTMLSelectElement;
           if (!isChildInput) {
             e.preventDefault();
-            if (orders[currentRow]) toggleRowSelection(orders[currentRow].id);
+            if (orders[currentRow]) {
+              toggleRowSelection(orders[currentRow].id);
+              lastClickedIndexRef.current = currentRow;
+            }
           }
           break;
         }
@@ -728,12 +825,17 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
     ]
   );
 
-  // Initialize focused cell
+  // Initialize and clamp focused cell
   useEffect(() => {
-    if (orders.length > 0 && focusedCell === null) {
-      setFocusedCell({ rowIndex: 0, colId: COLUMNS[0].id });
+    if (orders.length === 0) {
+      if (focusedCell !== null) {
+        setFocusedCell(null);
+      }
+      return;
     }
-    if (focusedCell !== null && focusedCell.rowIndex >= orders.length && orders.length > 0) {
+    if (focusedCell === null) {
+      setFocusedCell({ rowIndex: 0, colId: COLUMNS[0].id });
+    } else if (focusedCell.rowIndex >= orders.length) {
       setFocusedCell({ rowIndex: orders.length - 1, colId: focusedCell.colId });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -762,7 +864,7 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
   }
 
   return (
-    <div className="grid-wrapper">
+    <div className={`grid-wrapper${isResizing ? ' grid-wrapper--resizing' : ''}`}>
       {/* Scrollable grid — keyboard-navigable */}
       <div
         ref={gridScrollRef}
@@ -774,7 +876,16 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
         onKeyDown={handleGridKeyDown}
         data-grid-wrapper=""
       >
-        <table className="grid-table">
+        <table className="grid-table" style={{ tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: `${colWidths.check ?? 36}px` }} />
+            {COLUMNS.map((col) => (
+              <col
+                key={col.id}
+                style={{ width: `${colWidths[col.id] ?? DEFAULT_WIDTHS[col.id] ?? 120}px` }}
+              />
+            ))}
+          </colgroup>
           <thead className="grid-thead">
             <tr style={{ height: 'var(--header-height)' }}>
               {/* Select-all checkbox column header */}
@@ -796,12 +907,22 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
                   onSortClick={handleColumnClick}
                   pinnedColumn={pinnedColumn}
                   onPinColumn={setPinnedColumn}
+                  onStartResize={handleStartResize}
                 />
               ))}
             </tr>
           </thead>
           <tbody className="grid-tbody">
-            {orders.map((order, rowIdx) => {
+            {/* Top virtual spacer */}
+            {paddingTop > 0 && (
+              <tr style={{ height: `${paddingTop}px`, background: 'transparent' }} aria-hidden="true">
+                <td colSpan={COLUMNS.length + 1} style={{ height: `${paddingTop}px`, padding: 0, border: 'none' }} />
+              </tr>
+            )}
+
+            {/* Virtualized visible rows */}
+            {visibleOrders.map((order, localIdx) => {
+              const rowIdx = startIndex + localIdx;
               const isSelected = selectedIds.has(order.id);
               const isFocused = focusedCell?.rowIndex === rowIdx;
               const rowClass = [
@@ -816,7 +937,7 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
                   key={order.id}
                   id={`grid-row-${rowIdx}`}
                   className={rowClass}
-                  onClick={() => toggleRowSelection(order.id)}
+                  onClick={(e) => handleRowClick(rowIdx, order.id, e)}
                   onDoubleClick={() => openDetail(order)}
                   role="row"
                   aria-rowindex={rowIdx + 1}
@@ -829,8 +950,8 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
                       type="checkbox"
                       className="grid-checkbox"
                       checked={isSelected}
-                      onChange={() => toggleRowSelection(order.id)}
-                      onClick={(e) => e.stopPropagation()}
+                      onChange={() => {}}
+                      onClick={(e) => handleCheckboxClick(rowIdx, order.id, e)}
                       aria-label={`Select order ${order.id}`}
                     />
                   </td>
@@ -859,6 +980,13 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
                 </tr>
               );
             })}
+
+            {/* Bottom virtual spacer */}
+            {paddingBottom > 0 && (
+              <tr style={{ height: `${paddingBottom}px`, background: 'transparent' }} aria-hidden="true">
+                <td colSpan={COLUMNS.length + 1} style={{ height: `${paddingBottom}px`, padding: 0, border: 'none' }} />
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

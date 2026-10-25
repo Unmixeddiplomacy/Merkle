@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import type { Condition, FieldId } from '../../types/filter';
 import type { FieldDef } from '../../types/filter';
 import { FIELD_DEFS, FIELD_MAP, getOperatorLabels } from './fieldDefs';
 import { useClickOutside } from '../../hooks/useClickOutside';
+import { useDebounce } from '../../hooks/useDebounce';
 
 // ─── Shared custom select ─────────────────────────────────────────────────────
 interface SelectProps {
@@ -173,6 +174,78 @@ function EnumSelect({ values, enumValues, onChange }: EnumSelectProps) {
   );
 }
 
+// ─── Debounced text & number input components ────────────────────────────────
+
+function DebouncedTextInput({
+  value,
+  onChange,
+  placeholder = 'Enter value…',
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+}) {
+  const [localVal, setLocalVal] = useState(value);
+  const debouncedVal = useDebounce(localVal, 300);
+
+  useEffect(() => {
+    setLocalVal(value);
+  }, [value]);
+
+  useEffect(() => {
+    if (debouncedVal !== value) {
+      onChange(debouncedVal);
+    }
+  }, [debouncedVal]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <div className="fb-input">
+      <input
+        type="text"
+        value={localVal}
+        placeholder={placeholder}
+        onChange={(e) => setLocalVal(e.target.value)}
+        onKeyDown={(e) => e.stopPropagation()}
+        autoComplete="off"
+      />
+    </div>
+  );
+}
+
+function DebouncedNumberInput({
+  value,
+  onChange,
+  placeholder = 'Enter value…',
+}: {
+  value: number | '';
+  onChange: (val: number | '') => void;
+  placeholder?: string;
+}) {
+  const [localVal, setLocalVal] = useState<string>(value === '' ? '' : String(value));
+  const debouncedVal = useDebounce(localVal, 300);
+
+  useEffect(() => {
+    setLocalVal(value === '' ? '' : String(value));
+  }, [value]);
+
+  useEffect(() => {
+    const parsed = debouncedVal === '' ? '' : Number(debouncedVal);
+    if (parsed !== value && !Number.isNaN(parsed)) {
+      onChange(parsed);
+    }
+  }, [debouncedVal]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <input
+      type="number"
+      value={localVal}
+      placeholder={placeholder}
+      onChange={(e) => setLocalVal(e.target.value)}
+      onKeyDown={(e) => e.stopPropagation()}
+    />
+  );
+}
+
 // ─── Value input switcher ─────────────────────────────────────────────────────
 interface ValueInputProps {
   cond: Condition;
@@ -193,16 +266,10 @@ function ValueInput({ cond, onChange }: ValueInputProps) {
 
   if (cond.type === 'text') {
     return (
-      <div className="fb-input">
-        <input
-          type="text"
-          value={cond.value}
-          placeholder="Enter value…"
-          onChange={(e) => onChange({ value: e.target.value } as Partial<Condition>)}
-          onKeyDown={(e) => e.stopPropagation()}
-          autoComplete="off"
-        />
-      </div>
+      <DebouncedTextInput
+        value={cond.value}
+        onChange={(val) => onChange({ value: val } as Partial<Condition>)}
+      />
     );
   }
 
@@ -210,32 +277,25 @@ function ValueInput({ cond, onChange }: ValueInputProps) {
     if (cond.operator === 'between') {
       return (
         <div className="fb-input fb-input--between">
-          <input
-            type="number"
+          <DebouncedNumberInput
             value={cond.value}
             placeholder="Min"
-            onChange={(e) => onChange({ value: e.target.value === '' ? '' : Number(e.target.value) } as Partial<Condition>)}
-            onKeyDown={(e) => e.stopPropagation()}
+            onChange={(val) => onChange({ value: val } as Partial<Condition>)}
           />
           <span>and</span>
-          <input
-            type="number"
+          <DebouncedNumberInput
             value={cond.value2 ?? ''}
             placeholder="Max"
-            onChange={(e) => onChange({ value2: e.target.value === '' ? '' : Number(e.target.value) } as Partial<Condition>)}
-            onKeyDown={(e) => e.stopPropagation()}
+            onChange={(val) => onChange({ value2: val } as Partial<Condition>)}
           />
         </div>
       );
     }
     return (
       <div className="fb-input">
-        <input
-          type="number"
+        <DebouncedNumberInput
           value={cond.value}
-          placeholder="Enter value…"
-          onChange={(e) => onChange({ value: e.target.value === '' ? '' : Number(e.target.value) } as Partial<Condition>)}
-          onKeyDown={(e) => e.stopPropagation()}
+          onChange={(val) => onChange({ value: val } as Partial<Condition>)}
         />
       </div>
     );

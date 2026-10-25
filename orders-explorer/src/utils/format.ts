@@ -52,6 +52,7 @@ function manualINR(amount: number): string {
 }
 
 export function formatINR(amount: number): string {
+  if (typeof amount !== 'number' || isNaN(amount)) return '₹0.00';
   const fmt = getINRFormatter();
   if (fmt) {
     // Intl result already includes the ₹ symbol for 'en-IN' + INR
@@ -95,7 +96,7 @@ function getTimeFormatter(): Intl.DateTimeFormat {
 }
 
 export function formatDate(date: Date | null): string {
-  if (date === null || date === undefined) return '—';
+  if (date === null || date === undefined || isNaN(date.getTime())) return '—';
   // Produces e.g. "14 Mar 2025"
   const datePart = getDateFormatter().format(date);
   // Produces e.g. "09:30"
@@ -105,6 +106,6 @@ export function formatDate(date: Date | null): string {
 
 // ─── Short date (date only, no time) — for date filter chips ─────────────────
 export function formatDateShort(date: Date | null): string {
-  if (date === null || date === undefined) return '—';
+  if (date === null || date === undefined || isNaN(date.getTime())) return '—';
   return getDateFormatter().format(date);
 }

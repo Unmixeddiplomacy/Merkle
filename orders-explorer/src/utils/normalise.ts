@@ -185,6 +185,11 @@ function normaliseSchemaVersion(value: unknown): 1 | 2 {
  * ALL ten data problems from data-notes.md are fixed here and ONLY here.
  */
 export function normaliseOrder(raw: RawOrder, originalIndex: number): Order | null {
+  if (!raw || typeof raw !== 'object') {
+    console.warn('[normalise] Skipping non-object record at index', originalIndex);
+    return null;
+  }
+
   // ── Guard: must have an ID ──
   const id = normaliseId(raw.id);
   if (!id) {
@@ -200,11 +205,17 @@ export function normaliseOrder(raw: RawOrder, originalIndex: number): Order | nu
       ? (raw.customer_name ?? raw.customerName)
       : (raw.customerName ?? raw.customer_name);
   const customer =
-    typeof customerRaw === 'string' ? customerRaw.trim() : '';
+    typeof customerRaw === 'string'
+      ? customerRaw.trim()
+      : (customerRaw ? String(customerRaw).trim() : '');
 
   // ── Problem 2 + 3 (amount): parse string, then convert paise→rupees for v1 ──
   const rawAmount = parseAmount(raw.amount);
-  const amountINR = schemaVersion === 1 ? rawAmount / 100 : rawAmount;
+  let amountINR = schemaVersion === 1 ? rawAmount / 100 : rawAmount;
+  if (isNaN(amountINR)) {
+    console.warn('[normalise] amountINR resulted in NaN at index', originalIndex, '— setting to 0');
+    amountINR = 0;
+  }
 
   // ── Problem 9 (currency): trim trailing spaces ──
   // We always output 'INR' — the source field is only checked for completeness
@@ -212,8 +223,11 @@ export function normaliseOrder(raw: RawOrder, originalIndex: number): Order | nu
 
   // ── Problem 3 (createdAt): four formats ──
   const createdAtParsed = parseCreatedAt(raw.createdAt);
-  // If unparseable, fall back to epoch (1970-01-01) as a last resort — do not crash
-  const createdAt = createdAtParsed ?? new Date(0);
+  // If unparseable or invalid Date, fall back to epoch (1970-01-01) as a last resort
+  const createdAt =
+    createdAtParsed && !isNaN(createdAtParsed.getTime())
+      ? createdAtParsed
+      : new Date(0);
 
   // ── Problem 4 (updatedAt): null or missing ──
   const updatedAt = parseUpdatedAt(raw.updatedAt);

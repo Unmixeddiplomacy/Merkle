@@ -50,21 +50,57 @@ function serialiseSel(ids: Set<string>): string {
 
 // ─── Deserialisers (NEVER throw — always return a safe default) ───────────────
 
+const VALID_FIELD_IDS = new Set([
+  'id',
+  'customer',
+  'customerEmail',
+  'status',
+  'amountINR',
+  'region',
+  'channel',
+  'priority',
+  'paymentMethod',
+  'itemCount',
+  'notes',
+  'createdAt',
+  'updatedAt',
+]);
+
+const VALID_TYPES = new Set(['text', 'number', 'date', 'enum']);
+
+function isValidCondition(c: unknown): boolean {
+  if (!c || typeof c !== 'object') return false;
+  const cond = c as Record<string, unknown>;
+  if (!cond.field || typeof cond.field !== 'string' || !VALID_FIELD_IDS.has(cond.field)) return false;
+  if (!cond.type || typeof cond.type !== 'string' || !VALID_TYPES.has(cond.type)) return false;
+  if (!cond.operator || typeof cond.operator !== 'string') return false;
+  return true;
+}
+
+function isValidFilterGroup(g: unknown): boolean {
+  if (!g || typeof g !== 'object') return false;
+  const group = g as Record<string, unknown>;
+  if (!group.id || typeof group.id !== 'string') return false;
+  if (!Array.isArray(group.conditions)) return false;
+  return group.conditions.every(isValidCondition);
+}
+
+function isValidFilterState(f: unknown): f is FilterState {
+  if (!f || typeof f !== 'object') return false;
+  const filter = f as Record<string, unknown>;
+  if (!Array.isArray(filter.groups)) return false;
+  return filter.groups.every(isValidFilterGroup);
+}
+
 function deserialiseFilter(raw: string | null): FilterState | null {
   if (!raw) return null;
   try {
     const json = fromBase64(raw);
     const parsed: unknown = JSON.parse(json);
-    // Validate minimal shape: must have a `groups` array
-    if (
-      typeof parsed === 'object' &&
-      parsed !== null &&
-      'groups' in parsed &&
-      Array.isArray((parsed as { groups: unknown }).groups)
-    ) {
-      return parsed as FilterState;
+    if (isValidFilterState(parsed)) {
+      return parsed;
     }
-    console.warn('[useUrlSync] filter param had unexpected shape — ignoring');
+    console.warn('[useUrlSync] filter param had unexpected shape or invalid fields — ignoring');
     return null;
   } catch (e) {
     console.warn('[useUrlSync] Could not decode filter param:', e);
@@ -136,43 +172,49 @@ export function useUrlSync(): void {
     if (hydrated.current) return;
     hydrated.current = true;
 
-    const params = new URLSearchParams(window.location.search);
     let hadErrors = false;
 
-    // filter
-    const rawFilter = params.get('filter');
-    const parsedFilter = deserialiseFilter(rawFilter);
-    if (rawFilter && parsedFilter === null) {
-      hadErrors = true;
-    }
-    if (parsedFilter) setFilter(parsedFilter);
+    try {
+      const params = new URLSearchParams(window.location.search);
 
-    // sort
-    const rawSort = params.get('sort');
-    const parsedSort = deserialiseSort(rawSort);
-    if (rawSort && parsedSort === null) {
-      hadErrors = true;
-    }
-    if (parsedSort) setSort(parsedSort);
+      // filter
+      const rawFilter = params.get('filter');
+      const parsedFilter = deserialiseFilter(rawFilter);
+      if (rawFilter && parsedFilter === null) {
+        hadErrors = true;
+      }
+      if (parsedFilter) setFilter(parsedFilter);
 
-    // pin
-    const rawPin = params.get('pin');
-    const parsedPin = deserialisePinnedColumn(rawPin);
-    if (rawPin && parsedPin === null) {
-      hadErrors = true;
-    }
-    if (parsedPin) setPinnedColumn(parsedPin);
+      // sort
+      const rawSort = params.get('sort');
+      const parsedSort = deserialiseSort(rawSort);
+      if (rawSort && parsedSort === null) {
+        hadErrors = true;
+      }
+      if (parsedSort) setSort(parsedSort);
 
-    // sel
-    const rawSel = params.get('sel');
-    const parsedSel = deserialiseSel(rawSel);
-    // We can't know if individual IDs were "bad" without the dataset,
-    // so we only flag an error if the raw string was non-empty but
-    // all entries were rejected.
-    if (rawSel && rawSel.trim() !== '' && parsedSel.size === 0) {
+      // pin
+      const rawPin = params.get('pin');
+      const parsedPin = deserialisePinnedColumn(rawPin);
+      if (rawPin && parsedPin === null) {
+        hadErrors = true;
+      }
+      if (parsedPin) setPinnedColumn(parsedPin);
+
+      // sel
+      const rawSel = params.get('sel');
+      const parsedSel = deserialiseSel(rawSel);
+      // We can't know if individual IDs were "bad" without the dataset,
+      // so we only flag an error if the raw string was non-empty but
+      // all entries were rejected.
+      if (rawSel && rawSel.trim() !== '' && parsedSel.size === 0) {
+        hadErrors = true;
+      }
+      if (parsedSel.size > 0) setSelectedIds(parsedSel);
+    } catch (err) {
+      console.warn('[useUrlSync] Fatal error parsing URL params:', err);
       hadErrors = true;
     }
-    if (parsedSel.size > 0) setSelectedIds(parsedSel);
 
     if (hadErrors) {
       setUrlErrorBanner(
