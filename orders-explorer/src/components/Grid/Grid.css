@@ -364,9 +364,11 @@
 .priority-badge--3 .priority-badge__dot { background: #71717a; }
 
 .priority-badge--none {
-  color: var(--text-faint);
-  font-size: 13px;
-  font-family: var(--font-sans);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 1px 4px;
+  opacity: 0.75;
 }
 
 /* ── Select-all checkbox in header ──────────────────────────────────────── */
@@ -765,6 +767,8 @@
   flex-shrink: 0;
   gap: 16px;
   user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .statusbar__left   { display: flex; align-items: center; gap: 12px; min-width: 0; }

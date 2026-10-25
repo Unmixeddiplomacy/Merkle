@@ -3,7 +3,6 @@ import type { FieldDef, FieldId, FieldType } from '../../types/filter';
 export const FIELD_DEFS: FieldDef[] = [
   { id: 'id',            label: 'Order ID',    type: 'text' },
   { id: 'customer',      label: 'Customer',    type: 'text' },
-  { id: 'customerEmail', label: 'Email',       type: 'text' },
   { id: 'status',        label: 'Status',      type: 'enum', enumValues: ['pending','processing','shipped','delivered','cancelled'] },
   { id: 'amountINR',     label: 'Amount (₹)',  type: 'number' },
   { id: 'region',        label: 'Region',      type: 'enum', enumValues: ['NORTH','SOUTH','EAST','WEST','CENTRAL','NORTHEAST'] },
@@ -11,9 +10,9 @@ export const FIELD_DEFS: FieldDef[] = [
   { id: 'priority',      label: 'Priority',    type: 'enum', enumValues: ['1','2','3','None'] },
   { id: 'paymentMethod', label: 'Payment',     type: 'enum', enumValues: ['upi','card','netbanking','cod','wallet'] },
   { id: 'itemCount',     label: 'Items',       type: 'number' },
-  { id: 'notes',         label: 'Notes',       type: 'text' },
   { id: 'createdAt',     label: 'Created At',  type: 'date' },
   { id: 'updatedAt',     label: 'Updated At',  type: 'date' },
+  { id: 'notes',         label: 'Notes',       type: 'text' },
 ];
 
 export const FIELD_MAP = new Map<FieldId, FieldDef>(

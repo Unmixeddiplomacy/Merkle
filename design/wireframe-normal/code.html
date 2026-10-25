@@ -1,731 +1,688 @@
 <!DOCTYPE html>
 
-<html class="light" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;background-color:#ffffff;color:#09090b;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        "colors": {
-          "border-subtle": "#e4e4e7",
-          "border-default": "#d4d4d8",
-          "border-strong": "#a1a1aa",
-          "text-primary": "#09090b",
-          "text-secondary": "#52525b",
-          "text-muted": "#71717a",
-          "surface-base": "#ffffff",
-          "surface-subtle": "#fafafa",
-          "surface-container": "#f4f4f5",
-          "surface-container-low": "#fafafa",
-          "surface-container-high": "#f4f4f5",
-          "surface-container-lowest": "#ffffff",
-          "surface-dim": "#f4f4f5",
-          "primary": "#09090b",
-          "on-primary": "#ffffff"
-        },
-        "borderRadius": {
-          "DEFAULT": "0.25rem",
-          "lg": "0.375rem",
-          "xl": "0.5rem",
-          "full": "9999px"
-        },
-        "spacing": {
-          "space-lg": "0.75rem",
-          "space-xl": "1rem",
-          "gutter": "0.875rem",
-          "space-md": "0.5rem",
-          "margin": "1rem",
-          "space-xs": "0.25rem",
-          "space-sm": "0.375rem"
-        },
-        "fontFamily": {
-          "data-mono-sm": ["JetBrains Mono", "monospace"],
-          "headline-lg": ["Hanken Grotesk", "sans-serif"],
-          "label-caps": ["Geist", "sans-serif"],
-          "body-compact": ["Geist", "sans-serif"],
-          "headline-sm": ["Hanken Grotesk", "sans-serif"],
-          "body-strong": ["Geist", "sans-serif"],
-          "data-mono": ["JetBrains Mono", "monospace"],
-          "kbd-shortcut": ["JetBrains Mono", "monospace"],
-          "headline-md": ["Hanken Grotesk", "sans-serif"],
-          "body-default": ["Geist", "sans-serif"],
-          "data-mono-bold": ["JetBrains Mono", "monospace"]
-        },
-        "fontSize": {
-          "data-mono-sm": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
-          "headline-lg": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
-          "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.06em", "fontWeight": "600"}],
-          "body-compact": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
-          "headline-sm": ["14px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-          "body-strong": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "600"}],
-          "data-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
-          "kbd-shortcut": ["10px", {"lineHeight": "12px", "fontWeight": "500"}],
-          "headline-md": ["17px", {"lineHeight": "22px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
-          "body-default": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
-          "data-mono-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+<html class="h-full bg-white" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Orders Explorer</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+          },
+          colors: {
+            slate: {
+              750: '#293548',
+              850: '#172033',
+            }
+          }
         }
       }
     }
-  }
-</script></head><body class="bg-surface-base font-body-default text-text-primary antialiased selection:bg-zinc-900 selection:text-white min-h-screen"><header class="fixed top-0 left-0 right-0 h-11 bg-white border-b border-border-subtle z-50 px-gutter"><div class="h-11 w-full flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-md shrink-0"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-text-primary text-[18px]">terminal</span><span class="font-headline-sm text-headline-sm text-text-primary tracking-tight font-semibold">Orders Explorer</span></div><span class="inline-flex items-center px-space-xs py-0.5 rounded bg-zinc-100 border border-zinc-200 font-data-mono-sm text-data-mono-sm text-text-secondary">v2.8.4-prod</span><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-label-caps text-label-caps uppercase"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LIVE</span></div><div class="hidden md:flex items-center gap-space-sm bg-zinc-50 px-space-md py-space-xs rounded border border-border-subtle text-text-secondary font-data-mono text-data-mono"><span class="material-symbols-outlined text-[15px] text-zinc-900">sync_alt</span><span class="text-text-primary font-data-mono-bold text-data-mono-bold">1,284</span><span>of</span><span class="text-text-secondary">50,000 orders</span><span class="text-zinc-300">|</span><span class="font-data-mono-sm text-data-mono-sm text-text-muted">Stream: 42ms</span></div><div class="flex items-center gap-space-md shrink-0"><div class="flex items-center bg-zinc-100 border border-border-subtle rounded p-0.5"><button class="p-1 rounded bg-white text-zinc-900 shadow-sm border border-border-subtle" title="Table View" type="button"><span class="material-symbols-outlined text-[16px]">table_rows</span></button><button class="p-1 rounded text-text-muted hover:text-text-primary transition-colors" title="Split Inspector" type="button"><span class="material-symbols-outlined text-[16px]">vertical_split</span></button><button class="p-1 rounded text-text-muted hover:text-text-primary transition-colors" title="Raw Telemetry Log" type="button"><span class="material-symbols-outlined text-[16px]">data_array</span></button></div><button class="inline-flex items-center gap-space-xs px-2.5 py-1 h-7 rounded bg-white border border-border-subtle hover:bg-zinc-50 hover:border-zinc-300 text-text-primary font-body-compact text-body-compact transition-colors shadow-xs" type="button"><span class="material-symbols-outlined text-[15px] text-zinc-700">download</span><span>Export CSV</span><kbd class="hidden sm:inline-block font-kbd-shortcut text-kbd-shortcut bg-zinc-100 border border-zinc-200 px-1 rounded text-zinc-500">⌥E</kbd></button><div class="h-4 w-px bg-border-subtle"></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-zinc-600 text-[18px] cursor-pointer hover:text-text-primary transition-colors" title="Incidents">notifications</span><div class="flex items-center gap-space-xs pl-space-xs"><div class="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-900 flex items-center justify-center text-white font-headline-sm text-xs font-semibold">OP</div><div class="hidden lg:flex flex-col text-left"><span class="font-body-compact text-body-compact text-text-primary leading-tight font-semibold">ops.primary</span><span class="font-label-caps text-label-caps text-zinc-500 uppercase tracking-wider">L3 Responder</span></div></div></div></div></div></header><aside class="fixed left-0 top-11 bottom-0 w-60 bg-zinc-50/70 border-r border-border-subtle z-40 flex flex-col justify-between py-space-sm"><div class="flex flex-col gap-space-md"><div class="px-space-md py-space-xs"><span class="font-label-caps text-label-caps text-zinc-500 uppercase tracking-wider font-semibold">Queues &amp; Telemetry</span></div><nav class="flex flex-col space-y-0.5 px-space-xs"><a aria-current="page" class="flex items-center justify-between px-space-sm py-1.5 rounded transition-colors bg-white text-zinc-950 border border-border-subtle shadow-xs font-body-strong" data-path="live-orders" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-zinc-950">orders</span><span class="font-semibold text-zinc-950">Live Orders</span></span><span class="font-data-mono-sm text-data-mono-sm px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-700 border border-zinc-200">1.2k</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 font-body-compact text-body-compact transition-colors" data-path="critical-failures" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-red-600">error</span><span>Critical Failures</span></span><span class="font-data-mono-sm text-data-mono-sm px-1.5 py-0.2 rounded bg-red-50 text-red-700 border border-red-200">14</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 font-body-compact text-body-compact transition-colors" data-path="settlement-exceptions" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-amber-600">warning</span><span>Settlement Hold</span></span><span class="font-data-mono-sm text-data-mono-sm px-1.5 py-0.2 rounded bg-zinc-100 text-zinc-700 border border-zinc-200">89</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 font-body-compact text-body-compact transition-colors" data-path="routing-logs" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-zinc-500">schema</span><span>Pipeline Routing</span></span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 font-body-compact text-body-compact transition-colors" data-path="telemetry-audit" href="#"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-zinc-500">receipt_long</span><span>Audit Ledger</span></span></a></nav></div><div class="px-space-md py-space-xs border-t border-border-subtle flex items-center justify-between font-data-mono-sm text-data-mono-sm text-zinc-500"><span>CLUSTER: us-east-01</span><span class="text-emerald-700 font-medium">SYNC OK</span></div></aside><div class="pl-60"><main class="relative pt-11 min-h-screen w-full bg-white px-gutter"><div class="flex flex-col w-full pb-14 pt-3">
-<!-- TOP FILTER BUILDER PANEL -->
-<section class="w-full bg-white rounded-lg p-space-md border border-border-subtle shadow-xs mb-space-md" id="filter-builder-section">
-<!-- Collapsible Header & Summary Bar -->
-<div class="flex items-center justify-between pb-space-xs border-b border-border-subtle pb-2.5">
-<div class="flex items-center gap-space-sm">
-<button class="flex items-center gap-1.5 text-zinc-900 hover:text-black transition-colors focus:outline-none focus:ring-1 focus:ring-zinc-400 rounded px-1" id="toggle-filter-btn" type="button">
-<span class="material-symbols-outlined text-[16px] text-zinc-800 transition-transform" id="filter-toggle-icon">expand_more</span>
-<span class="font-headline-sm text-headline-sm tracking-tight text-zinc-900 font-semibold">Filter Builder</span>
-</button>
-<span class="font-kbd-shortcut text-kbd-shortcut bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded text-zinc-600 font-medium">⌘F</span>
-<div class="h-3.5 w-px bg-border-subtle"></div>
-<span class="font-data-mono-sm text-data-mono-sm text-zinc-500">MATCHING: <span class="text-zinc-950 font-semibold">1,284 RECORDS</span></span>
+  </script>
+<!-- Typography & Global Layout Styles -->
+<style data-purpose="typography">
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-tabular {
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+<!-- Table and Scroll Customizations -->
+<style data-purpose="table-layout">
+    /* Subtle custom scrollbar for density-rich data tables */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col bg-[#fbfbfc] text-[13px] text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900">
+<!-- BEGIN: TopHeader -->
+<header class="flex-none px-4 py-2.5 bg-white border-b border-gray-200 flex items-center justify-between shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+<!-- Left: Title -->
+<div class="flex items-center space-x-2">
+<svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<rect height="14" rx="2" ry="2" width="20" x="2" y="3"></rect>
+<line x1="8" x2="16" y1="21" y2="21"></line>
+<line x1="12" x2="12" y1="17" y2="21"></line>
+</svg>
+<h1 class="text-sm font-semibold tracking-tight text-slate-900">Orders Explorer</h1>
 </div>
-<!-- Quick Active Filter Chips Preview -->
-<div class="flex items-center gap-space-xs overflow-x-auto max-w-[65%]">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-100 border border-zinc-200 text-zinc-700 font-data-mono-sm text-data-mono-sm">
-<span>Region: <strong class="text-zinc-950 font-medium">West India</strong></span>
-<button class="hover:text-zinc-950 ml-0.5 text-xs text-zinc-400">×</button>
-</span>
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-50 border border-red-200 text-red-900 font-data-mono-sm text-data-mono-sm">
-<span>Status: <strong class="text-red-700 font-medium">Failed</strong>, <strong class="text-amber-700 font-medium">Retry</strong></span>
-<button class="hover:text-red-950 ml-0.5 text-xs text-red-400">×</button>
-</span>
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-100 border border-zinc-200 text-zinc-700 font-data-mono-sm text-data-mono-sm">
-<span>Amount &gt; <strong class="text-zinc-950 font-medium">₹15,000</strong></span>
-<button class="hover:text-zinc-950 ml-0.5 text-xs text-zinc-400">×</button>
-</span>
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-100 border border-zinc-200 text-zinc-700 font-data-mono-sm text-data-mono-sm">
-<span>Priority: <strong class="text-zinc-950 font-medium">P0</strong></span>
-<button class="hover:text-zinc-950 ml-0.5 text-xs text-zinc-400">×</button>
-</span>
-<button class="text-zinc-700 hover:text-black font-body-compact text-body-compact underline ml-1 shrink-0 font-medium" type="button">Clear all</button>
+<!-- Center: Total Count Pill -->
+<div class="flex items-center space-x-1.5 px-3 py-1 bg-slate-50 border border-gray-200 rounded text-xs text-slate-600 shadow-sm font-tabular">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M16 3h5v5"></path>
+<path d="M4 20L21 3"></path>
+<path d="M21 16v5h-5"></path>
+<path d="M15 15l6 6"></path>
+<path d="M4 4l5 5"></path>
+</svg>
+<span><strong class="font-medium text-slate-800">50,000</strong> of 50,000 orders</span>
 </div>
-</div>
-<!-- Dynamic Condition Builder Matrix -->
-<div class="flex flex-col gap-space-xs pt-space-xs" id="filter-builder-body">
-<!-- Group 1 (AND) -->
-<div class="flex flex-col gap-space-xs bg-zinc-50 border border-border-subtle p-space-sm rounded">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-space-xs">
-<span class="px-1.5 py-0.5 rounded bg-zinc-200/80 border border-zinc-300 text-zinc-800 font-label-caps text-label-caps font-semibold">GROUP 1 (AND)</span>
-<span class="font-data-mono-sm text-data-mono-sm text-zinc-500">All criteria must evaluate true</span>
-</div>
-<button class="text-zinc-400 hover:text-zinc-800 transition-colors text-[14px]" type="button"><span class="material-symbols-outlined text-[14px]">delete</span></button>
-</div>
-<!-- Condition Row 1.1 -->
-<div class="flex items-center gap-space-xs w-full">
-<div class="w-40 shrink-0">
-<div class="relative bg-white border border-border-subtle rounded px-2.5 py-1 flex items-center justify-between text-zinc-900 font-body-compact text-body-compact cursor-pointer hover:border-zinc-400 shadow-2xs">
-<span class="font-medium">Status</span>
-<span class="material-symbols-outlined text-[14px] text-zinc-500">arrow_drop_down</span>
-</div>
-</div>
-<div class="w-36 shrink-0">
-<div class="relative bg-white border border-border-subtle rounded px-2.5 py-1 flex items-center justify-between text-zinc-600 font-body-compact text-body-compact cursor-pointer hover:border-zinc-400 shadow-2xs">
-<span>is any of</span>
-<span class="material-symbols-outlined text-[14px] text-zinc-500">arrow_drop_down</span>
-</div>
-</div>
-<div class="flex-1 flex items-center gap-1.5 bg-white border border-border-subtle rounded px-2 py-1 min-h-[28px] flex-wrap shadow-2xs">
-<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-50 border border-red-200 text-red-800 font-label-caps text-label-caps font-medium">Failed <button class="hover:text-red-950 font-bold ml-0.5">×</button></span>
-<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800 font-label-caps text-label-caps font-medium">Pending Retry <button class="hover:text-amber-950 font-bold ml-0.5">×</button></span>
-<input class="bg-transparent text-zinc-900 font-data-mono-sm text-data-mono-sm focus:outline-none w-24 placeholder:text-zinc-400" placeholder="Type tag..." type="text"/>
-</div>
-<button class="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-zinc-700 transition-colors shrink-0" type="button">
-<span class="material-symbols-outlined text-[16px]">close</span>
+<!-- Right: Actions -->
+<div class="flex items-center space-x-2">
+<button class="inline-flex items-center px-2.5 py-1 text-xs font-normal text-slate-600 bg-white border border-gray-200 rounded hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-xs" type="button">
+<svg class="w-3.5 h-3.5 mr-1.5 text-slate-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+<polyline points="7 10 12 15 17 10"></polyline>
+<line x1="12" x2="12" y1="15" y2="3"></line>
+</svg>
+        Export CSV
+        <kbd class="ml-1.5 px-1 py-0.2 bg-slate-100 border border-slate-200 rounded text-[10px] text-slate-500 font-mono">¬E</kbd>
 </button>
 </div>
-<!-- Condition Row 1.2 -->
-<div class="flex items-center gap-space-xs w-full">
-<div class="w-40 shrink-0">
-<div class="relative bg-white border border-border-subtle rounded px-2.5 py-1 flex items-center justify-between text-zinc-900 font-body-compact text-body-compact cursor-pointer hover:border-zinc-400 shadow-2xs">
-<span class="font-medium">Amount (₹)</span>
-<span class="material-symbols-outlined text-[14px] text-zinc-500">arrow_drop_down</span>
-</div>
-</div>
-<div class="w-36 shrink-0">
-<div class="relative bg-white border border-border-subtle rounded px-2.5 py-1 flex items-center justify-between text-zinc-600 font-body-compact text-body-compact cursor-pointer hover:border-zinc-400 shadow-2xs">
-<span>greater than</span>
-<span class="material-symbols-outlined text-[14px] text-zinc-500">arrow_drop_down</span>
-</div>
-</div>
-<div class="flex-1">
-<input class="w-full bg-white border border-border-subtle text-zinc-900 font-data-mono text-data-mono px-2 py-1 rounded focus:outline-none focus:border-zinc-900 shadow-2xs" type="text" value="15000"/>
-</div>
-<button class="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-zinc-700 transition-colors shrink-0" type="button">
-<span class="material-symbols-outlined text-[16px]">close</span>
+</header>
+<!-- END: TopHeader -->
+<!-- BEGIN: FilterBuilderSection -->
+<section class="flex-none bg-white border-b border-gray-200 px-4 py-3" data-purpose="filter-panel">
+<!-- Filter Header Row -->
+<div class="flex items-center space-x-2 text-xs">
+<!-- Caret -->
+<button class="text-slate-400 hover:text-slate-700 transition-colors">
+<svg class="w-3 h-3 rotate-90" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
 </button>
+<!-- Funnel Icon -->
+<svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+</svg>
+<!-- Filter Builder Text -->
+<span class="font-medium text-slate-900">Filter Builder</span>
+<!-- Shortcut Badge -->
+<kbd class="px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-slate-100 border border-slate-200 rounded leading-none">⌘F</kbd>
+<!-- Filter Status Indicator -->
+<span class="text-slate-400 text-xs flex items-center">
+<span class="inline-block w-1 h-1 rounded-full bg-slate-400 mx-1.5"></span>
+        No filters active
+      </span>
 </div>
-</div>
-<!-- Group Separator Badge -->
-<div class="relative flex items-center justify-center my-0.5">
-<div class="absolute inset-0 flex items-center"><div class="w-full h-px bg-border-subtle"></div></div>
-<span class="relative px-2 py-0.5 bg-white border border-zinc-200 text-zinc-700 font-label-caps text-label-caps rounded shadow-xs font-semibold">AND</span>
-</div>
-<!-- Group 2 (OR Condition Group) -->
-<div class="flex flex-col gap-space-xs bg-zinc-50 border border-border-subtle p-space-sm rounded">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-space-xs">
-<span class="px-1.5 py-0.5 rounded bg-zinc-200/80 border border-zinc-300 text-zinc-800 font-label-caps text-label-caps font-semibold">GROUP 2 (OR)</span>
-<span class="font-data-mono-sm text-data-mono-sm text-zinc-500">Matches any child clause</span>
-</div>
-<button class="text-zinc-400 hover:text-zinc-800 transition-colors text-[14px]" type="button"><span class="material-symbols-outlined text-[14px]">delete</span></button>
-</div>
-<div class="flex items-center gap-space-xs w-full">
-<div class="w-40 shrink-0">
-<div class="relative bg-white border border-border-subtle rounded px-2.5 py-1 flex items-center justify-between text-zinc-900 font-body-compact text-body-compact cursor-pointer hover:border-zinc-400 shadow-2xs">
-<span class="font-medium">Region</span>
-<span class="material-symbols-outlined text-[14px] text-zinc-500">arrow_drop_down</span>
-</div>
-</div>
-<div class="w-36 shrink-0">
-<div class="relative bg-white border border-border-subtle rounded px-2.5 py-1 flex items-center justify-between text-zinc-600 font-body-compact text-body-compact cursor-pointer hover:border-zinc-400 shadow-2xs">
-<span>equals</span>
-<span class="material-symbols-outlined text-[14px] text-zinc-500">arrow_drop_down</span>
-</div>
-</div>
-<div class="flex-1">
-<input class="w-full bg-white border border-border-subtle text-zinc-900 font-body-default text-body-default px-2 py-1 rounded focus:outline-none focus:border-zinc-900 shadow-2xs" type="text" value="West - Mumbai DC"/>
-</div>
-<button class="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-zinc-700 transition-colors shrink-0" type="button">
-<span class="material-symbols-outlined text-[16px]">close</span>
+<!-- Filter Explanatory Label -->
+<div class="mt-2 text-xs text-slate-400 font-mono tracking-tight">
+      No filter groups yet. Add a group to start filtering.
+    </div>
+<!-- Filter Actions Bar -->
+<div class="mt-3 flex items-center justify-between">
+<button class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-slate-700 bg-white border border-gray-300 rounded hover:bg-slate-50 transition-colors shadow-xs" type="button">
+<svg class="w-3.5 h-3.5 mr-1 text-slate-500" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<line x1="12" x2="12" y1="5" y2="19"></line>
+<line x1="5" x2="19" y1="12" y2="12"></line>
+</svg>
+        Add Group
+      </button>
+<div class="flex items-center space-x-3">
+<button class="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors" type="button">
+          Reset
+        </button>
+<button class="inline-flex items-center px-3 py-1 bg-slate-900 text-white rounded text-xs font-medium hover:bg-slate-800 transition-colors shadow-xs" type="button">
+          Apply Filters
+          <span class="ml-1.5 text-[11px] text-slate-300 font-mono">↵</span>
 </button>
-</div>
-</div>
-<!-- Filter Panel Bottom Action Bar -->
-<div class="flex items-center justify-between pt-space-xs">
-<div class="flex items-center gap-space-xs">
-<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white border border-border-subtle text-zinc-800 hover:bg-zinc-50 hover:border-zinc-300 font-body-compact text-body-compact transition-colors shadow-2xs" type="button">
-<span class="material-symbols-outlined text-[14px] text-zinc-700">add</span>
-<span>Add Condition</span>
-</button>
-<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white border border-border-subtle text-zinc-800 hover:bg-zinc-50 hover:border-zinc-300 font-body-compact text-body-compact transition-colors shadow-2xs" type="button">
-<span class="material-symbols-outlined text-[14px] text-zinc-500">library_add</span>
-<span>Add Group</span>
-</button>
-</div>
-<div class="flex items-center gap-space-sm">
-<button class="px-2 py-1 rounded text-zinc-600 hover:text-zinc-950 font-body-compact text-body-compact transition-colors font-medium" type="button">Reset</button>
-<button class="inline-flex items-center gap-2 px-3 py-1 bg-zinc-950 text-white font-body-strong text-body-strong rounded hover:bg-zinc-800 transition-colors shadow-xs" type="button">
-<span>Apply Filters</span>
-<kbd class="font-kbd-shortcut text-kbd-shortcut bg-zinc-800 text-zinc-300 px-1 py-0.5 rounded">↵</kbd>
-</button>
-</div>
 </div>
 </div>
 </section>
-<!-- QUICK OPERATIONAL METRICS STRIP -->
-<div class="grid grid-cols-4 gap-space-sm mb-space-md">
-<div class="bg-white border border-border-subtle rounded p-space-sm flex items-center justify-between shadow-xs">
-<div>
-<span class="font-label-caps text-label-caps text-zinc-500 block font-semibold">FAILED ROUTING RATE</span>
-<span class="font-headline-md text-headline-md text-zinc-950 font-data-mono-bold">3.82%</span>
-</div>
-<div class="w-16 h-7">
-<svg class="w-full h-full stroke-current text-zinc-500 fill-none" viewbox="0 0 60 20">
-<polyline points="0,15 10,12 20,18 30,8 40,14 50,4 60,6" stroke-linecap="round" stroke-width="1.5"></polyline>
-</svg>
-</div>
-</div>
-<div class="bg-white border border-border-subtle rounded p-space-sm flex items-center justify-between shadow-xs">
-<div>
-<span class="font-label-caps text-label-caps text-zinc-500 block font-semibold">AVG SETTLEMENT LATENCY</span>
-<span class="font-headline-md text-headline-md text-zinc-950 font-data-mono-bold">184 ms</span>
-</div>
-<div class="w-16 h-7">
-<svg class="w-full h-full stroke-current text-zinc-500 fill-none" viewbox="0 0 60 20">
-<polyline points="0,8 10,10 20,5 30,12 40,6 50,7 60,3" stroke-linecap="round" stroke-width="1.5"></polyline>
-</svg>
-</div>
-</div>
-<div class="bg-white border border-border-subtle rounded p-space-sm flex items-center justify-between shadow-xs">
-<div>
-<span class="font-label-caps text-label-caps text-zinc-500 block font-semibold">HELD IN ESCROW (24H)</span>
-<span class="font-headline-md text-headline-md text-zinc-950 font-data-mono-bold">₹9.42M</span>
-</div>
-<div class="w-16 h-7">
-<svg class="w-full h-full stroke-current text-zinc-500 fill-none" viewbox="0 0 60 20">
-<polyline points="0,18 12,14 24,15 36,9 48,11 60,2" stroke-linecap="round" stroke-width="1.5"></polyline>
-</svg>
-</div>
-</div>
-<div class="bg-white border border-border-subtle rounded p-space-sm flex items-center justify-between shadow-xs">
-<div>
-<span class="font-label-caps text-label-caps text-zinc-500 block font-semibold">CIRCUIT BREAKER</span>
-<span class="inline-flex items-center gap-1 font-label-caps text-label-caps text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-medium">NOMINAL / ARMED</span>
-</div>
-<span class="material-symbols-outlined text-zinc-800 text-[20px]">verified</span>
-</div>
-</div>
-<!-- MAIN VIRTUALIZED DATA GRID -->
-<div class="w-full bg-white border border-border-subtle rounded overflow-hidden shadow-xs relative flex flex-col">
-<div class="w-full overflow-x-auto relative select-none">
-<table class="w-full text-left table-fixed min-w-[1340px]">
-<!-- Sticky Table Header -->
-<thead class="bg-zinc-50/90 border-b border-border-subtle sticky top-0 z-20 text-zinc-600 font-label-caps text-label-caps uppercase tracking-wider">
-<tr class="h-8">
-<!-- Pin / Selection Column -->
-<th class="w-10 px-2 py-1 text-center bg-zinc-50 sticky left-0 z-30 border-r border-border-subtle">
-<input checked="" class="rounded bg-white border-zinc-300 text-zinc-900 focus:ring-0 focus:ring-offset-0 w-3.5 h-3.5 cursor-pointer accent-zinc-950" type="checkbox"/>
+<!-- END: FilterBuilderSection -->
+<!-- BEGIN: MainDataGrid -->
+<main class="flex-1 overflow-auto bg-[#fafafa]">
+<div class="inline-block min-w-full align-middle">
+<table class="min-w-full divide-y divide-gray-200 border-b border-gray-200 text-left bg-white text-xs whitespace-nowrap" id="orders-data-table">
+<!-- Table Column Headers -->
+<thead class="bg-[#f8fafc] text-slate-500 uppercase font-medium tracking-wider sticky top-0 z-10 select-none shadow-[0_1px_0_rgba(0,0,0,0.05)] border-b border-gray-200 text-[10px]">
+<tr>
+<!-- Selection Checkbox -->
+<th class="w-9 px-3 py-2 border-r border-gray-200 text-center" scope="col">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0 cursor-pointer" type="checkbox"/>
 </th>
-<!-- Pinned Order ID -->
-<th class="w-32 px-3 py-1 bg-zinc-50 sticky left-10 z-30 border-r border-border-subtle group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-between">
-<span class="flex items-center gap-1 text-zinc-950 font-data-mono-bold">Order ID <span class="material-symbols-outlined text-[13px]">arrow_drop_down</span></span>
-<span class="text-zinc-300 hover:text-zinc-500 cursor-col-resize">|</span>
+<!-- ORDER ID -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium" scope="col">
+<div class="flex items-center justify-between space-x-1 cursor-pointer group">
+<span>ORDER ID</span>
+<span class="text-slate-300 group-hover:text-slate-500 text-[9px]">↕</span>
 </div>
 </th>
-<!-- Customer -->
-<th class="w-44 px-3 py-1 group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-between">
-<span>Customer</span>
-<span class="text-zinc-300 cursor-col-resize">|</span>
+<!-- CUSTOMER -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium" scope="col">
+<div class="flex items-center justify-between space-x-1 cursor-pointer group">
+<span>CUSTOMER</span>
+<span class="text-slate-300 group-hover:text-slate-500 text-[9px]">↕</span>
 </div>
 </th>
-<!-- Status -->
-<th class="w-32 px-3 py-1 group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-between">
-<span>Status</span>
-<span class="text-zinc-300 cursor-col-resize">|</span>
+<!-- STATUS -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium" scope="col">
+<div class="flex items-center justify-between space-x-1 cursor-pointer group">
+<span>STATUS</span>
+<span class="text-slate-300 group-hover:text-slate-500 text-[9px]">↕</span>
 </div>
 </th>
-<!-- Amount (Monospace Right-Aligned) -->
-<th class="w-36 px-3 py-1 text-right group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-end gap-1">
-<span>Amount (₹)</span>
-<span class="material-symbols-outlined text-[13px] text-zinc-900">arrow_drop_up</span>
-<span class="text-zinc-300 ml-1 cursor-col-resize">|</span>
+<!-- AMOUNT (₹) -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium text-right" scope="col">
+<div class="flex items-center justify-end space-x-1 cursor-pointer group">
+<span>AMOUNT (₹)</span>
+<span class="text-slate-300 group-hover:text-slate-500 text-[9px]">↕</span>
 </div>
 </th>
-<!-- Region -->
-<th class="w-32 px-3 py-1 group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-between">
-<span>Region</span>
-<span class="text-zinc-300 cursor-col-resize">|</span>
+<!-- REGION -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium" scope="col">
+<div class="flex items-center justify-between space-x-1 cursor-pointer group">
+<span>REGION</span>
+<span class="text-slate-300 group-hover:text-slate-500 text-[9px]">↕</span>
 </div>
 </th>
-<!-- Channel -->
-<th class="w-28 px-3 py-1 group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-between">
-<span>Channel</span>
-<span class="text-zinc-300 cursor-col-resize">|</span>
+<!-- CHANNEL -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium" scope="col">
+<span>CHANNEL</span>
+</th>
+<!-- PRIORITY -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium" scope="col">
+<span>PRIORITY</span>
+</th>
+<!-- PAYMENT -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium" scope="col">
+<div class="flex items-center justify-between space-x-1 cursor-pointer group">
+<span>PAYMENT</span>
+<span class="text-slate-300 group-hover:text-slate-500 text-[9px]">↕</span>
 </div>
 </th>
-<!-- Priority -->
-<th class="w-24 px-3 py-1 group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-between">
-<span>Priority</span>
-<span class="text-zinc-300 cursor-col-resize">|</span>
+<!-- ITEMS -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium text-right" scope="col">
+<span>ITEMS</span>
+</th>
+<!-- CREATED AT -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium" scope="col">
+<div class="flex items-center justify-between space-x-1 cursor-pointer group">
+<span>CREATED AT</span>
+<span class="text-slate-300 group-hover:text-slate-500 text-[9px]">↕</span>
 </div>
 </th>
-<!-- Payment Method -->
-<th class="w-32 px-3 py-1 group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-between">
-<span>Payment</span>
-<span class="text-zinc-300 cursor-col-resize">|</span>
+<!-- UPDATED AT -->
+<th class="px-3 py-2 border-r border-gray-200 font-medium" scope="col">
+<div class="flex items-center justify-between space-x-1 cursor-pointer group">
+<span>UPDATED AT</span>
+<span class="text-slate-300 group-hover:text-slate-500 text-[9px]">↕</span>
 </div>
 </th>
-<!-- Items -->
-<th class="w-20 px-2 py-1 text-right group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-end gap-1">
-<span>Items</span>
-<span class="text-zinc-300 ml-1 cursor-col-resize">|</span>
-</div>
+<!-- NOTES / LOGS -->
+<th class="px-3 py-2 font-medium" scope="col">
+<span>NOTES / LOGS</span>
 </th>
-<!-- Created At -->
-<th class="w-36 px-3 py-1 group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-between">
-<span>Created At</span>
-<span class="text-zinc-300 cursor-col-resize">|</span>
-</div>
-</th>
-<!-- Updated At -->
-<th class="w-36 px-3 py-1 group cursor-pointer hover:text-zinc-950">
-<div class="flex items-center justify-between">
-<span>Updated At</span>
-<span class="text-zinc-300 cursor-col-resize">|</span>
-</div>
-</th>
-<!-- Notes -->
-<th class="w-48 px-3 py-1">Notes / Logs</th>
 </tr>
 </thead>
-<!-- Table Data Rows -->
-<tbody class="divide-y divide-zinc-200 font-body-compact text-body-compact bg-white">
-<!-- Row 1 (Checked & Selected Highlight) -->
-<tr class="h-8 bg-zinc-100/90 hover:bg-zinc-100 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-zinc-100 sticky left-0 z-10 border-r border-border-subtle border-l-2 border-l-zinc-900">
-<input checked="" class="rounded bg-white border-zinc-400 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Table Body Rows -->
+<tbody class="divide-y divide-gray-100 font-sans text-slate-700">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<!-- Focused Cell Indicator Demo -->
-<td class="w-32 px-3 py-1 bg-zinc-100 sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-950 font-semibold ring-1 ring-zinc-900/40 rounded">
-              ORD-984210
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-950 font-body-strong font-medium truncate">Aarav Singhania</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-50 border border-red-200 text-red-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>FAILED
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000001</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Priya Gupta</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-semibold">₹48,250.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">West - Mumbai DC</td>
-<td class="w-28 px-3 py-1 text-zinc-600">B2B Portal</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-red-100/80 border border-red-300 text-red-900 font-data-mono-bold text-[10px]">P0-CRIT</span>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹309.53</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">EAST</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">store</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+<span class="w-1 h-1 rounded-full bg-slate-400 mr-1.5"></span>
+                P3-LOW
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">Razorpay / UPI</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">14</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:22:08</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:22:42</td>
-<td class="w-48 px-3 py-1 text-red-700 text-xs truncate">Err: Auth timeout at gateway (504)</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">netbanking</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">1</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">09 Mar 2026, 00:44</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-400 font-mono text-[11px]">—</td>
+<td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">—</td>
 </tr>
-<!-- Row 2 (Checked & Selected Highlight) -->
-<tr class="h-8 bg-zinc-100/90 hover:bg-zinc-100 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-zinc-100 sticky left-0 z-10 border-r border-border-subtle border-l-2 border-l-zinc-900">
-<input checked="" class="rounded bg-white border-zinc-400 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 2 (With Focused Amount Cell) -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-zinc-100 sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-950 font-medium">
-              ORD-984209
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-950 font-body-strong font-medium truncate">Zomato Logistics HQ</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>PROCESSING
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000002</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Amit Sharma</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+<span class="w-1 h-1 rounded-full bg-amber-500 mr-1.5"></span>
+                PENDING
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-semibold">₹2,140.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">North - Delhi DC</td>
-<td class="w-28 px-3 py-1 text-zinc-600">API Webhook</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-zinc-100 border border-zinc-200 text-zinc-700 font-data-mono-bold text-[10px]">P2-NORM</span>
+<!-- Focused Cell with subtle blue border & background -->
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums bg-blue-50/70 outline outline-1 outline-blue-400 -outline-offset-1 text-slate-900">₹307.80</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">NORTH</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">web</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+<span class="w-1 h-1 rounded-full bg-slate-400 mr-1.5"></span>
+                P3-LOW
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">HDFC NetBank</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">2</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:21:49</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:21:55</td>
-<td class="w-48 px-3 py-1 text-zinc-500 text-xs truncate">Awaiting warehouse dispatch node 4</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">upi</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">2</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">18 Sept 2024, 19:40</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-400 font-mono text-[11px]">—</td>
+<td class="px-3 py-1.5 text-slate-600 text-[11px]">Repeat customer.</td>
 </tr>
-<!-- Row 3 (Unchecked Normal) -->
-<tr class="h-8 bg-white hover:bg-zinc-50 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-white sticky left-0 z-10 border-r border-border-subtle">
-<input class="rounded bg-white border-zinc-300 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-white sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-900">
-              ORD-984208
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-900 font-body-strong truncate">Priya V. Sundaram</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>COMPLETED
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000003</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Saanvi Gupta</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-medium">₹18,920.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">South - BLR Tech</td>
-<td class="w-28 px-3 py-1 text-zinc-600">iOS App</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-zinc-100 border border-zinc-200 text-zinc-700 font-data-mono-bold text-[10px]">P2-NORM</span>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹1,962.40</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">CENTRAL</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">phone</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-700 border border-red-200">
+<span class="w-1 h-1 rounded-full bg-red-500 mr-1.5"></span>
+                P1-HIGH
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">Paytm VPA</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">6</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:19:12</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:20:01</td>
-<td class="w-48 px-3 py-1 text-emerald-700 text-xs truncate">Settled ledger tx_08173</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">netbanking</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">1</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">29 Aug 2026, 01:58</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">05 Sept 2026, 02:06</td>
+<td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">—</td>
 </tr>
-<!-- Row 4 (Unchecked Normal) -->
-<tr class="h-8 bg-white hover:bg-zinc-50 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-white sticky left-0 z-10 border-r border-border-subtle">
-<input class="rounded bg-white border-zinc-300 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-white sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-900">
-              ORD-984207
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-900 font-body-strong truncate">CloudKitchens Ltd</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span>ON HOLD
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000004</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Rohan Shah</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-medium">₹64,300.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">West - Mumbai DC</td>
-<td class="w-28 px-3 py-1 text-zinc-600">Enterprise EDI</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-zinc-200 border border-zinc-300 text-zinc-800 font-data-mono-bold text-[10px]">P1-HIGH</span>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹1,434.90</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">EAST</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">web</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+<span class="w-1 h-1 rounded-full bg-amber-500 mr-1.5"></span>
+                P2-NORM
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">ACH Escrow</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">82</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:18:02</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:18:30</td>
-<td class="w-48 px-3 py-1 text-zinc-600 text-xs truncate">AML compliance flag triggered on volume</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">netbanking</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">1</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">21 May 2026, 10:05</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">22 May 2026, 09:02</td>
+<td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">—</td>
 </tr>
-<!-- Row 5 (Unchecked Normal) -->
-<tr class="h-8 bg-white hover:bg-zinc-50 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-white sticky left-0 z-10 border-r border-border-subtle">
-<input class="rounded bg-white border-zinc-300 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 5 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-white sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-900">
-              ORD-984206
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-900 font-body-strong truncate">Devansh Verma</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>COMPLETED
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000005</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Ananya Sharma</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+<span class="w-1 h-1 rounded-full bg-amber-500 mr-1.5"></span>
+                PENDING
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-medium">₹3,499.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">East - Kolkata Hub</td>
-<td class="w-28 px-3 py-1 text-zinc-600">Android App</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-zinc-100 border border-zinc-200 text-zinc-700 font-data-mono-bold text-[10px]">P2-NORM</span>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹297.29</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">SOUTH</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">web</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+<span class="w-1 h-1 rounded-full bg-slate-400 mr-1.5"></span>
+                P3-LOW
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">PhonePe</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">1</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:15:33</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:16:11</td>
-<td class="w-48 px-3 py-1 text-zinc-500 text-xs truncate">Delivered by Bluedart 99318</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">card</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">1</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">07 Feb 2024, 00:00</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">08 Feb 2024, 22:56</td>
+<td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">—</td>
 </tr>
-<!-- Row 6 (Unchecked Normal) -->
-<tr class="h-8 bg-white hover:bg-zinc-50 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-white sticky left-0 z-10 border-r border-border-subtle">
-<input class="rounded bg-white border-zinc-300 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 6 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-white sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-900">
-              ORD-984205
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-900 font-body-strong truncate">Metro Supermarkets</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-50 border border-red-200 text-red-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>FAILED
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000006</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Ananya Malhotra</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-semibold">₹128,400.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">West - Pune DC</td>
-<td class="w-28 px-3 py-1 text-zinc-600">Custom API</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-red-100/80 border border-red-300 text-red-900 font-data-mono-bold text-[10px]">P0-CRIT</span>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹3,086.15</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">SOUTH</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">store</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+<span class="w-1 h-1 rounded-full bg-slate-400 mr-1.5"></span>
+                P3-LOW
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">ICICI Corporate</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">140</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:14:00</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:14:09</td>
-<td class="w-48 px-3 py-1 text-red-700 text-xs truncate">Signature verification mismatch token expired</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">card</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">1</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">23 Oct 2025, 09:15</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">26 Oct 2025, 17:59</td>
+<td class="px-3 py-1.5 text-slate-600 text-[11px]">Customer asked for evening delivery.</td>
 </tr>
-<!-- Row 7 (Unchecked Normal) -->
-<tr class="h-8 bg-white hover:bg-zinc-50 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-white sticky left-0 z-10 border-r border-border-subtle">
-<input class="rounded bg-white border-zinc-300 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 7 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-white sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-900">
-              ORD-984204
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-900 font-body-strong truncate">Kiran R. Kothari</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>COMPLETED
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000007</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Karan Joshi</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-medium">₹7,800.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">South - HYD DC</td>
-<td class="w-28 px-3 py-1 text-zinc-600">Mobile Web</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-zinc-100 border border-zinc-200 text-zinc-700 font-data-mono-bold text-[10px]">P2-NORM</span>
-</td>
-<td class="w-32 px-3 py-1 text-zinc-600">Cred Pay</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">3</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:12:44</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:13:20</td>
-<td class="w-48 px-3 py-1 text-zinc-500 text-xs truncate">Self-pickup terminal 2B</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹967.41</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">WEST</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">store</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-400 font-mono text-[11px]">—</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">card</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">1</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">21 Sept 2025, 00:00</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">04 Oct 2025, 23:39</td>
+<td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">—</td>
 </tr>
-<!-- Row 8 (Unchecked Normal) -->
-<tr class="h-8 bg-white hover:bg-zinc-50 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-white sticky left-0 z-10 border-r border-border-subtle">
-<input class="rounded bg-white border-zinc-300 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 8 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-white sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-900">
-              ORD-984203
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-900 font-body-strong truncate">Indus Health Med</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>PROCESSING
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000008</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Sai Menon</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-medium">₹15,400.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">North - Gurgaon</td>
-<td class="w-28 px-3 py-1 text-zinc-600">B2B Portal</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-zinc-200 border border-zinc-300 text-zinc-800 font-data-mono-bold text-[10px]">P1-HIGH</span>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹747.17</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">SOUTH</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">store</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+<span class="w-1 h-1 rounded-full bg-amber-500 mr-1.5"></span>
+                P2-NORM
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">Axis BillDesk</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">8</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:10:18</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:10:55</td>
-<td class="w-48 px-3 py-1 text-zinc-500 text-xs truncate">Cold chain container 10 assigned</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">upi</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">3</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">15 Mar 2026, 10:44</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">24 Mar 2026, 20:26</td>
+<td class="px-3 py-1.5 text-slate-600 text-[11px]">Return window extended by 3 days.</td>
 </tr>
-<!-- Row 9 (Unchecked Normal) -->
-<tr class="h-8 bg-white hover:bg-zinc-50 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-white sticky left-0 z-10 border-r border-border-subtle">
-<input class="rounded bg-white border-zinc-300 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 9 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-white sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-900">
-              ORD-984202
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-900 font-body-strong truncate">Rohan Mehra</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>COMPLETED
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000009</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Suresh Iyer</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-medium">₹950.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">West - Surat DC</td>
-<td class="w-28 px-3 py-1 text-zinc-600">iOS App</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-zinc-100 border border-zinc-200 text-zinc-700 font-data-mono-bold text-[10px]">P2-NORM</span>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹1,068.44</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">CENTRAL</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">phone</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+<span class="w-1 h-1 rounded-full bg-slate-400 mr-1.5"></span>
+                P3-LOW
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">Google Pay</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">1</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:09:01</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:09:44</td>
-<td class="w-48 px-3 py-1 text-emerald-700 text-xs truncate">Instant settlement auto-reconciled</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">wallet</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">2</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">27 Dec 2025, 15:18</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-400 font-mono text-[11px]">—</td>
+<td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">—</td>
 </tr>
-<!-- Row 10 (Unchecked Normal) -->
-<tr class="h-8 bg-white hover:bg-zinc-50 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-white sticky left-0 z-10 border-r border-border-subtle">
-<input class="rounded bg-white border-zinc-300 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 10 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-white sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-900">
-              ORD-984201
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-900 font-body-strong truncate">FabIndia Exports</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span>ON HOLD
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000010</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Meera Joshi</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-medium">₹84,200.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">North - Jaipur Hub</td>
-<td class="w-28 px-3 py-1 text-zinc-600">B2B Portal</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-zinc-200 border border-zinc-300 text-zinc-800 font-data-mono-bold text-[10px]">P1-HIGH</span>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹1,306.73</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">WEST</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">store</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+<span class="w-1 h-1 rounded-full bg-slate-400 mr-1.5"></span>
+                P3-LOW
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">Standard Chart</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">45</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:07:30</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:08:12</td>
-<td class="w-48 px-3 py-1 text-zinc-600 text-xs truncate">Customs document clearance requested</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">card</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">2</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">16 Oct 2023, 06:29</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-400 font-mono text-[11px]">—</td>
+<td class="px-3 py-1.5 text-slate-600 text-[11px]">Return window extended by 3 days.</td>
 </tr>
-<!-- Row 11 (Unchecked Normal) -->
-<tr class="h-8 bg-white hover:bg-zinc-50 transition-colors">
-<td class="w-10 px-2 py-1 text-center bg-white sticky left-0 z-10 border-r border-border-subtle">
-<input class="rounded bg-white border-zinc-300 text-zinc-900 w-3.5 h-3.5 accent-zinc-950" type="checkbox"/>
+<!-- Row 11 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
 </td>
-<td class="w-32 px-3 py-1 bg-white sticky left-10 z-10 border-r border-border-subtle font-data-mono text-data-mono text-zinc-900">
-              ORD-984200
-            </td>
-<td class="w-44 px-3 py-1 text-zinc-900 font-body-strong truncate">Tanvi Bhattacharya</td>
-<td class="w-32 px-3 py-1">
-<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-label-caps text-label-caps font-medium">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>COMPLETED
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000011</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Amit Verma</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-50 text-purple-700 border border-purple-200">
+<span class="w-1 h-1 rounded-full bg-purple-500 mr-1.5"></span>
+                SHIPPED
               </span>
 </td>
-<td class="w-36 px-3 py-1 text-right font-data-mono text-data-mono text-zinc-950 font-medium">₹5,120.00</td>
-<td class="w-32 px-3 py-1 text-zinc-600 truncate">East - Kolkata Hub</td>
-<td class="w-28 px-3 py-1 text-zinc-600">Android App</td>
-<td class="w-24 px-3 py-1">
-<span class="px-1.5 py-0.5 rounded bg-zinc-100 border border-zinc-200 text-zinc-700 font-data-mono-bold text-[10px]">P2-NORM</span>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹2,053.61</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">NORTH</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">store</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+<span class="w-1 h-1 rounded-full bg-amber-500 mr-1.5"></span>
+                P2-NORM
+              </span>
 </td>
-<td class="w-32 px-3 py-1 text-zinc-600">SBI UPI</td>
-<td class="w-20 px-2 py-1 text-right font-data-mono text-data-mono text-zinc-600">2</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:05:15</td>
-<td class="w-36 px-3 py-1 font-data-mono-sm text-data-mono-sm text-zinc-500">2025-02-23 14:06:02</td>
-<td class="w-48 px-3 py-1 text-zinc-500 text-xs truncate">Standard express dispatch</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">cod</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">1</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">21 Feb 2024, 22:10</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">01 Mar 2024, 00:14</td>
+<td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">—</td>
+</tr>
+<!-- Row 12 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000012</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Saanvi Pillai</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-rose-50 text-rose-700 border border-rose-200">
+<span class="w-1 h-1 rounded-full bg-rose-500 mr-1.5"></span>
+                CANCELLED
+              </span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹1,453.91</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">WEST</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">app</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+<span class="w-1 h-1 rounded-full bg-slate-400 mr-1.5"></span>
+                P3-LOW
+              </span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">card</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">5</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">20 Jan 2026, 17:12</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">23 Jan 2026, 18:43</td>
+<td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">—</td>
+</tr>
+<!-- Row 13 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000013</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Sneha Iyer</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
+              </span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹183.88</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">CENTRAL</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">web</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+<span class="w-1 h-1 rounded-full bg-slate-400 mr-1.5"></span>
+                P3-LOW
+              </span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">cod</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">2</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">09 Aug 2024, 18:27</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-400 font-mono text-[11px]">—</td>
+<td class="px-3 py-1.5 text-slate-600 text-[11px]">Gift wrap requested.</td>
+</tr>
+<!-- Row 14 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="w-9 px-3 py-1.5 border-r border-gray-100 text-center">
+<input class="w-3.5 h-3.5 rounded border-gray-300 text-slate-800 focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-mono text-[11px] text-slate-900 font-normal">
+<span class="px-1.5 py-0.5 border border-gray-200 rounded bg-white">ORD-0000014</span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 font-medium text-slate-900">Lakshmi Shah</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>
+                DELIVERED
+              </span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono font-normal tabular-nums text-slate-900">₹3,085.99</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">NORTHEAST</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">app</td>
+<td class="px-3 py-1.5 border-r border-gray-100">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+<span class="w-1 h-1 rounded-full bg-amber-500 mr-1.5"></span>
+                P2-NORM
+              </span>
+</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-600 font-mono text-[11px]">card</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-right font-mono text-[11px]">2</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">06 Mar 2026, 10:27</td>
+<td class="px-3 py-1.5 border-r border-gray-100 text-slate-500 font-mono text-[11px]">07 Mar 2026, 09:30</td>
+<td class="px-3 py-1.5 text-slate-400 font-mono text-[11px]">—</td>
 </tr>
 </tbody>
 </table>
 </div>
+</main>
+<!-- END: MainDataGrid -->
+<!-- BEGIN: BottomStatusBar -->
+<footer class="flex-none bg-white border-t border-gray-200 px-4 py-1.5 text-[11px] text-slate-500 flex items-center justify-between select-none">
+<!-- Left: Selected Count and Total Filtered Value -->
+<div class="flex items-center space-x-1.5">
+<span><strong class="font-medium text-slate-800">0</strong> rows selected</span>
+<span class="text-slate-300">•</span>
+<span>Total filtered: <strong class="font-medium font-mono text-slate-800">₹5,45,70,713.04</strong></span>
 </div>
-<!-- BOTTOM STICKY OPS STATUS BAR -->
-<footer class="fixed bottom-0 left-60 right-0 h-9 bg-white border-t border-border-subtle z-40 px-gutter flex items-center justify-between text-zinc-900 shadow-sm">
-<!-- Left: Selected Count and Aggregated Amount -->
-<div class="flex items-center gap-space-md font-data-mono-sm text-data-mono-sm">
-<div class="flex items-center gap-1.5">
-<span class="w-2 h-2 rounded-full bg-zinc-900"></span>
-<span class="text-zinc-950 font-data-mono-bold">2 rows selected</span>
-</div>
-<span class="text-zinc-300">|</span>
-<div class="flex items-center gap-1 text-zinc-600">
-<span>Total filtered:</span>
-<span class="text-zinc-950 font-data-mono-bold">₹3,412,890.00</span>
-</div>
-</div>
-<!-- Center: Virtual Scroll Window Position -->
-<div class="flex items-center gap-2 font-data-mono-sm text-data-mono-sm text-zinc-600">
-<span>Showing <strong class="text-zinc-950">1–25</strong> of <strong class="text-zinc-950">1,284</strong> orders</span>
-<div class="flex items-center gap-0.5 ml-2">
-<button class="p-0.5 rounded bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 text-zinc-900 disabled:opacity-30" disabled="">
-<span class="material-symbols-outlined text-[13px]">chevron_left</span>
-</button>
-<button class="p-0.5 rounded bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 text-zinc-900">
-<span class="material-symbols-outlined text-[13px]">chevron_right</span>
-</button>
-</div>
-</div>
-<!-- Right: Operational Keyboard Shortcut Helpers -->
-<div class="hidden lg:flex items-center gap-space-sm font-kbd-shortcut text-kbd-shortcut text-zinc-500">
-<div class="flex items-center gap-1">
-<kbd class="bg-zinc-100 border border-zinc-200 px-1 py-0.5 rounded text-zinc-700 font-medium">↑/↓</kbd>
-<span>Navigate</span>
-</div>
-<div class="flex items-center gap-1">
-<kbd class="bg-zinc-100 border border-zinc-200 px-1 py-0.5 rounded text-zinc-700 font-medium">Space</kbd>
-<span>Select</span>
-</div>
-<div class="flex items-center gap-1">
-<kbd class="bg-zinc-100 border border-zinc-200 px-1 py-0.5 rounded text-zinc-700 font-medium">Enter</kbd>
-<span>Inspect</span>
-</div>
-<div class="flex items-center gap-1">
-<kbd class="bg-zinc-100 border border-zinc-200 px-1 py-0.5 rounded text-zinc-700 font-medium">E</kbd>
-<span>Quick Edit</span>
-</div>
-<div class="flex items-center gap-1">
-<kbd class="bg-zinc-100 border border-zinc-200 px-1 py-0.5 rounded text-zinc-700 font-medium">⌘A</kbd>
-<span>Select All</span>
-</div>
-<div class="flex items-center gap-1">
-<kbd class="bg-zinc-100 border border-zinc-200 px-1 py-0.5 rounded text-zinc-700 font-medium">?</kbd>
-<span>Shortcuts</span>
-</div>
+<!-- Center: Current Paginated Count Indicator -->
+<div class="text-center font-tabular text-slate-500">
+      Showing <strong class="font-medium text-slate-800">50,000</strong> of <strong class="font-medium text-slate-800">50,000</strong> orders (100.00%)
+    </div>
+<!-- Right: Hotkey Navigation Legend -->
+<div class="flex items-center space-x-3 text-slate-400 font-mono text-[10px]">
+<span class="flex items-center gap-1">
+<span class="text-slate-600">↑/↓</span> Navigate
+      </span>
+<span class="flex items-center gap-1">
+<span class="text-slate-600">Space</span> Select
+      </span>
+<span class="flex items-center gap-1">
+<span class="text-slate-600">Enter</span> Detail
+      </span>
+<span class="flex items-center gap-1">
+<span class="text-slate-600">⌘F</span> Filter
+      </span>
+<span class="flex items-center gap-1">
+<span class="text-slate-600">¬E</span> Export
+      </span>
+<span class="flex items-center gap-1">
+<span class="text-slate-600">?</span> Help
+      </span>
 </div>
 </footer>
-<!-- Filter Toggle Interaction Script -->
-<script>
-    (function() {
-      const toggleBtn = document.getElementById('toggle-filter-btn');
-      const body = document.getElementById('filter-builder-body');
-      const icon = document.getElementById('filter-toggle-icon');
-
-      if (toggleBtn && body && icon) {
-        let open = true;
-        toggleBtn.addEventListener('click', () => {
-          open = !open;
-          if (open) {
-            body.classList.remove('hidden');
-            icon.style.transform = 'rotate(0deg)';
-          } else {
-            body.classList.add('hidden');
-            icon.style.transform = 'rotate(-90deg)';
-          }
-        });
-      }
-
-      // Keyboard navigation micro-interaction demo
-      document.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f') {
-          e.preventDefault();
-          if (toggleBtn) toggleBtn.click();
-        }
-      });
-    })();
-  </script>
-</div></main></div></body></html>
+<!-- END: BottomStatusBar -->
+</body></html>

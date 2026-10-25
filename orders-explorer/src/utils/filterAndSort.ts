@@ -65,7 +65,9 @@ function evaluateNumberCondition(
       if (cond.value2 === '' || cond.value2 === undefined) return true;
       const v2 = Number(cond.value2);
       if (isNaN(v2)) return true;
-      return val >= v1 && val <= v2; // inclusive on both ends
+      const min = Math.min(v1, v2);
+      const max = Math.max(v1, v2);
+      return val >= min && val <= max; // inclusive on both ends, works in any direction
     }
   }
 }
@@ -82,7 +84,7 @@ function evaluateDateCondition(
 
   // Incomplete condition
   if (!cond.value) return true;
-  // Parse as midnight UTC
+  // Parse start date as midnight UTC
   const v1 = new Date(cond.value + 'T00:00:00Z');
   if (isNaN(v1.getTime())) return true;
 
@@ -94,10 +96,15 @@ function evaluateDateCondition(
     case 'between': {
       // Both bounds required; if either is missing → no-op
       if (!cond.value2) return true;
-      const v2 = new Date(cond.value2 + 'T00:00:00Z');
+      // Parse end date to end-of-day UTC so same-day orders are included
+      const v2 = new Date(cond.value2 + 'T23:59:59.999Z');
       if (isNaN(v2.getTime())) return true;
-      // Inclusive on both ends
-      return orderDate >= v1 && orderDate <= v2;
+      const t1 = v1.getTime();
+      const t2 = v2.getTime();
+      const minT = Math.min(t1, t2);
+      const maxT = Math.max(t1, t2);
+      const orderT = orderDate.getTime();
+      return orderT >= minT && orderT <= maxT; // inclusive of entire range in any direction
     }
   }
 }

@@ -77,7 +77,7 @@ const PRIORITY_LABELS: Record<number, string> = { 1: 'P1-HIGH', 2: 'P2-NORM', 3:
 
 function PriorityBadge({ priority }: { priority: number | null }) {
   if (priority === null) {
-    return <span className="priority-badge--none">—</span>;
+    return <span className="priority-badge--none">None</span>;
   }
   return (
     <span className={`priority-badge priority-badge--${priority}`}>
@@ -374,16 +374,20 @@ function KeyboardHelp({ onClose }: { onClose: () => void }) {
   }, []);
 
   const shortcuts = [
-    { key: '\u2191 / \u2193',   desc: 'Navigate rows up / down' },
-    { key: '\u2190 / \u2192',   desc: 'Navigate columns left / right' },
-    { key: 'Enter',    desc: 'Open row detail panel' },
-    { key: 'Space',    desc: 'Toggle row selection' },
-    { key: 'Escape',   desc: 'Close panel / deselect all' },
-    { key: '\u2318F',  desc: 'Toggle Filter Builder' },
-    { key: '\u2325E',  desc: 'Export selected rows to CSV' },
-    { key: '?',        desc: 'Show this keyboard shortcuts panel' },
-    { key: 'Right-click column', desc: 'Pin / unpin, sort column' },
-    { key: 'Double-click row',   desc: 'Open row detail panel' },
+    { key: '↑ / ↓',             desc: 'Navigate rows up / down' },
+    { key: '← / →',             desc: 'Navigate columns left / right' },
+    { key: 'PgUp / PgDn',       desc: 'Jump 15 rows up / down' },
+    { key: 'Home / End',        desc: 'Jump to first / last row' },
+    { key: 'Space',             desc: 'Toggle row selection' },
+    { key: 'Enter',             desc: 'Open row detail panel' },
+    { key: 'S',                 desc: 'Sort focused column (asc / desc / off)' },
+    { key: 'P',                 desc: 'Pin / unpin focused column' },
+    { key: '⌘F / Ctrl+F',       desc: 'Toggle Filter Builder (focus moves inside)' },
+    { key: '⌥E / Alt+E',        desc: 'Export visible selected rows to CSV' },
+    { key: 'Escape',            desc: 'Close panel / deselect all' },
+    { key: '?',                 desc: 'Show this keyboard shortcuts panel' },
+    { key: 'Right-click column',desc: 'Column options (pin / sort)' },
+    { key: 'Double-click row',  desc: 'Open row detail panel' },
   ];
 
   return (
@@ -674,9 +678,18 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
     [allVisibleIds, selectRange, toggleRowSelection]
   );
 
+  const handleCellClick = useCallback(
+    (rowIdx: number, colId: string, orderId: string, e: ReactMouseEvent) => {
+      setFocusedCell({ rowIndex: rowIdx, colId });
+      handleRowClick(rowIdx, orderId, e);
+    },
+    [handleRowClick, setFocusedCell]
+  );
+
   const handleCheckboxClick = useCallback(
     (rowIdx: number, orderId: string, e: ReactMouseEvent) => {
       e.stopPropagation();
+      setFocusedCell({ rowIndex: rowIdx, colId: 'id' });
       if (e.shiftKey && lastClickedIndexRef.current !== null) {
         selectRange(lastClickedIndexRef.current, rowIdx, allVisibleIds);
       } else {
@@ -684,7 +697,7 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
         lastClickedIndexRef.current = rowIdx;
       }
     },
-    [allVisibleIds, selectRange, toggleRowSelection]
+    [allVisibleIds, selectRange, setFocusedCell, toggleRowSelection]
   );
 
   const totalFilteredAmount = useMemo(
@@ -715,20 +728,22 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
     });
   }, []);
 
-  // ── Scroll into view (keyboard only, smooth) ──────────────────────────────
+  // ── Scroll into view (keyboard only, auto/instant) ────────────────────────
 
   const scrollRowIntoView = useCallback((rowIndex: number) => {
     const container = gridScrollRef.current;
     if (!container) return;
     const HEADER_H = 32;
     const rowTop = rowIndex * ROW_HEIGHT;
-    const rowBottom = rowTop + ROW_HEIGHT;
+    const rowBottom = (rowIndex + 1) * ROW_HEIGHT;
     const scrollTop = container.scrollTop;
-    const viewBottom = scrollTop + container.clientHeight - HEADER_H;
-    if (rowTop < scrollTop + HEADER_H) {
-      container.scrollTo({ top: Math.max(0, rowTop - HEADER_H), behavior: 'smooth' });
+    const viewportHeight = container.clientHeight - HEADER_H;
+    const viewBottom = scrollTop + viewportHeight;
+
+    if (rowTop < scrollTop) {
+      container.scrollTo({ top: rowTop, behavior: 'auto' });
     } else if (rowBottom > viewBottom) {
-      container.scrollTo({ top: rowTop - container.clientHeight + HEADER_H + ROW_HEIGHT, behavior: 'smooth' });
+      container.scrollTo({ top: Math.max(0, rowBottom - viewportHeight), behavior: 'auto' });
     }
   }, []);
 
@@ -801,6 +816,49 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
           }
           break;
         }
+        case 'PageDown': {
+          e.preventDefault();
+          const nextRow = Math.min(currentRow + 15, rowCount - 1);
+          setFocusedCell({ rowIndex: nextRow, colId: currentColId });
+          scrollRowIntoView(nextRow);
+          break;
+        }
+        case 'PageUp': {
+          e.preventDefault();
+          const prevRow = Math.max(currentRow - 15, 0);
+          setFocusedCell({ rowIndex: prevRow, colId: currentColId });
+          scrollRowIntoView(prevRow);
+          break;
+        }
+        case 'Home': {
+          e.preventDefault();
+          setFocusedCell({ rowIndex: 0, colId: currentColId });
+          scrollRowIntoView(0);
+          break;
+        }
+        case 'End': {
+          e.preventDefault();
+          const lastRow = rowCount - 1;
+          setFocusedCell({ rowIndex: lastRow, colId: currentColId });
+          scrollRowIntoView(lastRow);
+          break;
+        }
+        case 's':
+        case 'S': {
+          if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+            e.preventDefault();
+            handleColumnClick(currentColId);
+          }
+          break;
+        }
+        case 'p':
+        case 'P': {
+          if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+            e.preventDefault();
+            setPinnedColumn(pinnedColumn === currentColId ? null : currentColId);
+          }
+          break;
+        }
         case 'Escape': {
           e.preventDefault();
           if (detailOrder) {
@@ -822,6 +880,9 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
       detailOrder,
       setSelectedIds,
       scrollRowIntoView,
+      handleColumnClick,
+      setPinnedColumn,
+      pinnedColumn,
     ]
   );
 
@@ -839,6 +900,22 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
       setFocusedCell({ rowIndex: orders.length - 1, colId: focusedCell.colId });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orders.length]);
+
+  // Auto-focus the grid container on initial load so keyboard navigation activates immediately
+  const hasAutoFocusedRef = useRef(false);
+  useEffect(() => {
+    if (!hasAutoFocusedRef.current && orders.length > 0 && gridScrollRef.current) {
+      hasAutoFocusedRef.current = true;
+      const active = document.activeElement;
+      const isInput =
+        active instanceof HTMLInputElement ||
+        active instanceof HTMLTextAreaElement ||
+        active instanceof HTMLSelectElement;
+      if (!isInput) {
+        gridScrollRef.current.focus({ preventScroll: true });
+      }
+    }
   }, [orders.length]);
 
   // ── Empty state ───────────────────────────────────────────────────────────
@@ -972,6 +1049,7 @@ export function Grid({ orders, totalCount, onClearFilters, onOpenFilterBuilder }
                         aria-colindex={colIdx + 2}
                         data-focused={isCellFocused ? 'true' : undefined}
                         title={col.id === 'notes' ? (order.notes || '') : undefined}
+                        onClick={(e) => handleCellClick(rowIdx, col.id, order.id, e)}
                       >
                         {renderCell(col.id, order)}
                       </td>
