@@ -292,6 +292,7 @@
   transition: background .1s;
 }
 .fb-select__option:hover { background: var(--surface-container); }
+.fb-select__option.highlighted { background: var(--surface-container-hi); }
 .fb-select__option.selected {
   background: var(--surface-subtle);
   font-weight: 600;
@@ -417,6 +418,7 @@
   color: var(--text-primary);
 }
 .fb-enum__option:hover { background: var(--surface-container); }
+.fb-enum__option.highlighted { background: var(--surface-container-hi); }
 .fb-enum__checkbox {
   width: 14px; height: 14px;
   border: 1px solid var(--border-default);

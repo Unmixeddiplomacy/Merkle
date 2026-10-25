@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { Condition, FieldId } from '../../types/filter';
 import type { FieldDef } from '../../types/filter';
 import { FIELD_DEFS, FIELD_MAP, getOperatorLabels } from './fieldDefs';
@@ -14,9 +14,26 @@ interface SelectProps {
 
 function CustomSelect({ value, options, onChange, className = '' }: SelectProps) {
   const [open, setOpen] = useState(false);
+  const [highlightedIdx, setHighlightedIdx] = useState(0);
   const close = useCallback(() => setOpen(false), []);
   const ref = useClickOutside<HTMLDivElement>(close);
   const current = options.find((o) => o.value === value)?.label ?? value;
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!open) {
+      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        setHighlightedIdx(options.findIndex((o) => o.value === value) || 0);
+        setOpen(true);
+      }
+      return;
+    }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setHighlightedIdx((i) => Math.min(i + 1, options.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setHighlightedIdx((i) => Math.max(i - 1, 0)); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(options[highlightedIdx].value); setOpen(false); }
+    else if (e.key === 'Escape') { e.preventDefault(); setOpen(false); }
+    else if (e.key === 'Tab') { setOpen(false); }
+  };
 
   return (
     <div className={`fb-select ${className}`} ref={ref}>
@@ -24,25 +41,28 @@ function CustomSelect({ value, options, onChange, className = '' }: SelectProps)
         type="button"
         className="fb-select__btn"
         onClick={() => setOpen((o) => !o)}
+        onKeyDown={handleKeyDown}
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-label={`${current}, select to change`}
       >
         <span>{current}</span>
         <span className="material-symbols-outlined fb-select__chevron">arrow_drop_down</span>
       </button>
       {open && (
-        <div className="fb-select__dropdown" role="listbox">
-          {options.map((opt) => (
+        <div className="fb-select__dropdown" role="listbox" aria-label="Options">
+          {options.map((opt, idx) => (
             <div
               key={opt.value}
               role="option"
               aria-selected={opt.value === value}
-              className={`fb-select__option${opt.value === value ? ' selected' : ''}`}
+              className={`fb-select__option${opt.value === value ? ' selected' : ''}${idx === highlightedIdx ? ' highlighted' : ''}`}
               onPointerDown={(e) => {
                 e.preventDefault();
                 onChange(opt.value);
                 setOpen(false);
               }}
+              onMouseEnter={() => setHighlightedIdx(idx)}
             >
               {opt.label}
             </div>
@@ -62,15 +82,33 @@ interface EnumSelectProps {
 
 function EnumSelect({ values, enumValues, onChange }: EnumSelectProps) {
   const [open, setOpen] = useState(false);
+  const [highlightedIdx, setHighlightedIdx] = useState(0);
   const close = useCallback(() => setOpen(false), []);
   const ref = useClickOutside<HTMLDivElement>(close);
 
   const toggle = (v: string) => {
-    onChange(
-      values.includes(v) ? values.filter((x) => x !== v) : [...values, v]
-    );
+    onChange(values.includes(v) ? values.filter((x) => x !== v) : [...values, v]);
   };
   const remove = (v: string) => onChange(values.filter((x) => x !== v));
+
+  const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setOpen(true);
+      setHighlightedIdx(0);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setOpen(false);
+    }
+  };
+
+  const handleDropdownKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setHighlightedIdx((i) => Math.min(i + 1, enumValues.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setHighlightedIdx((i) => Math.max(i - 1, 0)); }
+    else if (e.key === ' ') { e.preventDefault(); if (enumValues[highlightedIdx]) toggle(enumValues[highlightedIdx]); }
+    else if (e.key === 'Escape') { e.preventDefault(); setOpen(false); }
+    else if (e.key === 'Tab') { setOpen(false); }
+  };
 
   return (
     <div className="fb-enum" ref={ref}>
@@ -79,7 +117,9 @@ function EnumSelect({ values, enumValues, onChange }: EnumSelectProps) {
         role="combobox"
         aria-expanded={open}
         aria-haspopup="listbox"
+        tabIndex={0}
         onClick={() => setOpen((o) => !o)}
+        onKeyDown={handleTriggerKeyDown}
       >
         {values.length === 0 && (
           <span className="fb-enum__placeholder">Select values…</span>
@@ -100,16 +140,23 @@ function EnumSelect({ values, enumValues, onChange }: EnumSelectProps) {
         <span className="material-symbols-outlined fb-enum__chevron">arrow_drop_down</span>
       </div>
       {open && (
-        <div className="fb-enum__dropdown" role="listbox" aria-multiselectable="true">
-          {enumValues.map((ev) => {
+        <div
+          className="fb-enum__dropdown"
+          role="listbox"
+          aria-multiselectable="true"
+          tabIndex={-1}
+          onKeyDown={handleDropdownKeyDown}
+        >
+          {enumValues.map((ev, idx) => {
             const checked = values.includes(ev);
             return (
               <div
                 key={ev}
                 role="option"
                 aria-selected={checked}
-                className="fb-enum__option"
+                className={`fb-enum__option${idx === highlightedIdx ? ' highlighted' : ''}`}
                 onPointerDown={(e) => { e.preventDefault(); toggle(ev); }}
+                onMouseEnter={() => setHighlightedIdx(idx)}
               >
                 <span className={`fb-enum__checkbox${checked ? ' checked' : ''}`}>
                   {checked && (

@@ -92,14 +92,10 @@ export default function App() {
     return () => document.removeEventListener('keydown', handler);
   }, [handleExportCsv]);
 
-  // Esc = clear filters
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClearFilters();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [handleClearFilters]);
+  // NOTE: Escape key is now handled by the Grid component:
+  //   - If detail panel is open: closes the panel
+  //   - Otherwise: deselects all selected rows
+  // The FilterBuilder manages its own Escape (Ctrl+F toggle).
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
