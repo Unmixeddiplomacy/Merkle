@@ -44,7 +44,7 @@
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  min-width: 1260px;
+  min-width: 1460px;
   font-family: var(--font-sans);
   font-size: 12px;
 }
@@ -246,6 +246,13 @@
   font-size: 11px;
   color: var(--text-primary);
   font-weight: 500;
+}
+
+/* Email cell: monospace subtle */
+.grid-td--email {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
 }
 
 /* Amount: right-aligned monospace */

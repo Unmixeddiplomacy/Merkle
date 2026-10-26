@@ -58,6 +58,7 @@ export function renderCell(colId: string, order: Order): React.ReactNode {
   switch (colId) {
     case 'id':            return order.id;
     case 'customer':      return order.customer;
+    case 'customerEmail': return order.customerEmail || '—';
     case 'status':        return <StatusPill status={order.status} />;
     case 'amountINR':     return formatINR(order.amountINR);
     case 'region':        return order.region;

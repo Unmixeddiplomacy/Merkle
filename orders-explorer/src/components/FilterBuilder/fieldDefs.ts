@@ -1,9 +1,10 @@
 import type { FieldDef, FieldId, FieldType } from '../../types/filter';
 
 export const FIELD_DEFS: FieldDef[] = [
-  { id: 'id',            label: 'Order ID',    type: 'text' },
-  { id: 'customer',      label: 'Customer',    type: 'text' },
-  { id: 'status',        label: 'Status',      type: 'enum', enumValues: ['pending','processing','shipped','delivered','cancelled'] },
+  { id: 'id',            label: 'Order ID',       type: 'text' },
+  { id: 'customer',      label: 'Customer',       type: 'text' },
+  { id: 'customerEmail', label: 'Customer Email', type: 'text' },
+  { id: 'status',        label: 'Status',         type: 'enum', enumValues: ['pending','processing','shipped','delivered','cancelled'] },
   { id: 'amountINR',     label: 'Amount (₹)',  type: 'number' },
   { id: 'region',        label: 'Region',      type: 'enum', enumValues: ['NORTH','SOUTH','EAST','WEST','CENTRAL','NORTHEAST'] },
   { id: 'channel',       label: 'Channel',     type: 'enum', enumValues: ['web','app','phone','store'] },

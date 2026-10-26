@@ -63,6 +63,18 @@ describe('evaluateFilter', () => {
       };
       expect(evaluateFilter(mockOrder, filter)).toBe(true);
     });
+
+    it('evaluates customerEmail contains and equals', () => {
+      const emailFilter: FilterState = {
+        groups: [
+          {
+            id: 'g1',
+            conditions: [{ type: 'text', field: 'customerEmail', operator: 'contains', value: 'rahul@' }],
+          },
+        ],
+      };
+      expect(evaluateFilter(mockOrder, emailFilter)).toBe(true);
+    });
   });
 
   describe('Number conditions', () => {
