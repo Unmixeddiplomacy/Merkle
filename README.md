@@ -15,26 +15,37 @@ npm install
 
 # Start development server
 npm run dev
+
+# Run unit tests (26 tests via Vitest)
+npm test
+
+# Build and validate TypeScript production bundles
+npm run build
 ```
 
 The application opens at `http://localhost:5173` (or `http://localhost:5174` if 5173 is busy).
 
-To build and validate TypeScript production bundles:
-```bash
-npm run build
-```
+---
+
+## 2. Design Wireframes & Final Screenshots
+
+### State A: Normal Operations (50,000 Orders Loaded)
+
+#### Step 1: Initial Figma Wireframe
+![Normal State Wireframe](design/wireframe-normal/screen.png)
+
+#### Final Implemented Application
+![Main Screen](design/screenshot-main.png)
 
 ---
 
-## 2. Screenshots
+### State B: Zero-Result Empty State (When Filter Matches 0 Orders)
 
-### Main Screen with 50,000 Orders Loaded
-![Main Screen](design/screenshot-main.png)
+#### Step 1: Initial Figma Wireframe
+![Empty State Wireframe](design/wireframe-empty/screen.png)
 
-### Zero-Result Empty State (When Filter Matches 0 Orders)
+#### Final Implemented Application
 ![Empty State](design/screenshot-empty.png)
-
-*(Original Figma wireframes are preserved in `design/wireframe-normal/` and `design/wireframe-empty/`)*
 
 ---
 
@@ -137,22 +148,29 @@ Built specifically for high-frequency operations teams working on 13-inch laptop
 
 ---
 
-## 7. Design Changes (Figma Wireframes vs. Final App)
+## 7. Design Changes & User Impact (Figma Wireframes vs. Final App)
 
-The initial UI plan was prototyped in Figma (`design/wireframe-normal/` and `design/wireframe-empty/`). The following refinements were made during development:
+The initial UI plan was prototyped in Figma (`design/wireframe-normal/screen.png` and `design/wireframe-empty/screen.png`). The following refinements were made during development to specifically optimize for an operations team working on 13-inch laptops:
 
 1. **Slide-Over Order Detail Panel**:
    - *Figma Wireframe*: Showed `NOTES / LOGS` as a regular table column.
    - *Final App*: Notes in the real dataset contained long entries (>1,000 characters). Displaying them inline distorted row heights. We added a right slide-over Detail Panel (triggered via `Enter` or double-click) that renders complete metadata, customer details, timestamps, and full notes cleanly with `Escape` to close.
+   - *User Impact*: Keeps table row height strictly uniform at 32px so 20+ rows fit on a 13-inch display without distortion from 1,000-character customer notes.
+
 2. **Dedicated Filter Chips Strip**:
    - *Figma Wireframe*: Filter chips were contained inside the expanded filter box.
-   - *Final App*: To strictly satisfy Part 2 (*"Show the active filter as small chips above the grid. Each chip can be removed on its own. There is also a 'Clear all'"*), we extracted active filter chips into a thin strip directly above the table header. This allows the operations team to collapse the filter builder (`⌘F`) to maximize table rows while still seeing and removing individual constraints.
+   - *Final App*: To strictly satisfy Part 2 (*"Show the active filter as small chips above the grid. Each chip can be removed on its own. There is also a 'Clear all'"*), we extracted active filter chips into a thin strip directly above the table header.
+   - *User Impact*: Allows analysts to collapse the filter builder (`⌘F`) to maximize table rows on screen while still seeing and removing individual constraints.
+
 3. **Auto-Focus for Keyboard-First Operation**:
    - *Figma Wireframe*: Assumed standard mouse focus.
-   - *Final App*: In web browsers, `tabIndex={0}` grid containers do not receive arrow keystrokes until clicked. Because the operations team prefers keyboard navigation, we introduced an auto-focus hook on initial data load. Users can immediately press `↓`, `↑`, `Space`, or `Enter` the moment the page opens without needing an initial mouse click.
+   - *Final App*: In web browsers, `tabIndex={0}` grid containers do not receive arrow keystrokes until clicked. Because the operations team prefers keyboard navigation, we introduced an auto-focus hook on initial data load.
+   - *User Impact*: Zero-click workflow — operators can immediately press `↓`, `↑`, `Space`, or `Enter` the moment the page opens without needing an initial mouse click.
+
 4. **Column Resizing & Pinning Context Menu**:
    - *Figma Wireframe*: Displayed static column headers.
    - *Final App*: Added interactive column resize divider drag handles and a right-click / header menu to pin any column (e.g. Order ID or Customer) to the left side with sticky CSS positioning.
+   - *User Impact*: Operators can freeze high-priority identifier columns while horizontally scrolling through 12 data fields on a compact 13-inch laptop screen.
 
 ---
 

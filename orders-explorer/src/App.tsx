@@ -6,6 +6,7 @@ import { useUrlSync } from './hooks/useUrlSync';
 import { FilterBuilder } from './components/FilterBuilder/FilterBuilder';
 import { Grid } from './components/Grid/Grid';
 import { TopBar } from './components/TopBar';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { exportToCsv, buildExportFilename } from './utils/exportCsv';
 import { EMPTY_FILTER } from './types/filter';
 import type { FilterState } from './types/filter';
@@ -150,25 +151,27 @@ export default function App() {
       />
 
       {/* ── Main content area ────────────────────────────────────────────── */}
-      <main className="content-area">
-        <div className="content-inner">
-          {/* Filter Builder */}
-          <FilterBuilder
-            filter={filter}
-            onChange={handleFilterChange}
-            matchingCount={visibleOrders.length}
-            totalCount={orders.length}
-          />
+      <ErrorBoundary>
+        <main className="content-area">
+          <div className="content-inner">
+            {/* Filter Builder */}
+            <FilterBuilder
+              filter={filter}
+              onChange={handleFilterChange}
+              matchingCount={visibleOrders.length}
+              totalCount={orders.length}
+            />
 
-          {/* Data Grid */}
-          <Grid
-            orders={visibleOrders}
-            totalCount={orders.length}
-            onClearFilters={handleClearFilters}
-            onOpenFilterBuilder={handleOpenFilterBuilder}
-          />
-        </div>
-      </main>
+            {/* Data Grid */}
+            <Grid
+              orders={visibleOrders}
+              totalCount={orders.length}
+              onClearFilters={handleClearFilters}
+              onOpenFilterBuilder={handleOpenFilterBuilder}
+            />
+          </div>
+        </main>
+      </ErrorBoundary>
     </div>
   );
 }
