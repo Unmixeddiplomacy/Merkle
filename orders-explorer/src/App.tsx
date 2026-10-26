@@ -5,6 +5,7 @@ import { applyFilterAndSort } from './utils/filterAndSort';
 import { useUrlSync } from './hooks/useUrlSync';
 import { FilterBuilder } from './components/FilterBuilder/FilterBuilder';
 import { Grid } from './components/Grid/Grid';
+import { TopBar } from './components/TopBar';
 import { exportToCsv, buildExportFilename } from './utils/exportCsv';
 import { EMPTY_FILTER } from './types/filter';
 import type { FilterState } from './types/filter';
@@ -66,11 +67,11 @@ export default function App() {
     setFilter(EMPTY_FILTER);
   }, [setFilter]);
 
-  // Open filter builder via ⌘F — FilterBuilder handles the keyboard shortcut itself,
-  // but we expose this for the empty state "Modify conditions" button.
+  // Open filter builder via ⌘F
   const handleOpenFilterBuilder = useCallback(() => {
-    // Dispatch a synthetic Ctrl+F to trigger FilterBuilder's keyboard handler
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true }));
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true })
+    );
   }, []);
 
   // Export CSV
@@ -86,16 +87,14 @@ export default function App() {
   // Alt+E shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.altKey && e.key === 'e') { e.preventDefault(); handleExportCsv(); }
+      if (e.altKey && e.key === 'e') {
+        e.preventDefault();
+        handleExportCsv();
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [handleExportCsv]);
-
-  // NOTE: Escape key is now handled by the Grid component:
-  //   - If detail panel is open: closes the panel
-  //   - Otherwise: deselects all selected rows
-  // The FilterBuilder manages its own Escape (Ctrl+F toggle).
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -142,50 +141,13 @@ export default function App() {
         <div className="export-toast" role="alert">{exportToast}</div>
       )}
 
-      {/* ── Top bar ─────────────────────────────────────────────────────── */}
-      <header className="topbar">
-        <div className="topbar__left">
-          <div className="topbar__brand">
-            <span className="material-symbols-outlined topbar__logo">terminal</span>
-            <span className="topbar__title">Orders Explorer</span>
-          </div>
-        </div>
-
-        <div className="topbar__center">
-          <span className="material-symbols-outlined" style={{ fontSize: 15 }}>sync_alt</span>
-          <span className="topbar__count-num">{visibleOrders.length.toLocaleString()}</span>
-          <span>of</span>
-          <span style={{ color: 'var(--text-secondary)' }}>{orders.length.toLocaleString()} orders</span>
-          {exportRows.length > 0 && (
-            <>
-              <span className="topbar__sep">|</span>
-              <span className="topbar__sel-count">{exportRows.length.toLocaleString()} selected</span>
-            </>
-          )}
-        </div>
-
-        <div className="topbar__right">
-          <button
-            id="export-csv-btn"
-            className={`topbar__action-btn${exportRows.length === 0 ? ' topbar__action-btn--disabled' : ''}`}
-            onClick={handleExportCsv}
-            disabled={exportRows.length === 0}
-            title={
-              exportRows.length === 0
-                ? 'Select visible rows to export'
-                : `Export ${exportRows.length.toLocaleString()} visible selected rows to CSV`
-            }
-            type="button"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>download</span>
-            Export CSV
-            {exportRows.length > 0 && (
-              <span className="topbar__export-count">{exportRows.length}</span>
-            )}
-            <kbd className="topbar__kbd">⌥E</kbd>
-          </button>
-        </div>
-      </header>
+      {/* Top bar header */}
+      <TopBar
+        visibleCount={visibleOrders.length}
+        totalCount={orders.length}
+        exportRowCount={exportRows.length}
+        onExportCsv={handleExportCsv}
+      />
 
       {/* ── Main content area ────────────────────────────────────────────── */}
       <main className="content-area">
